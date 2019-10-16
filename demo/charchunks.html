@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <style type="text/css">
+      :root {
+        --flash-jerk: mediumvioletred;
+        --flash-help: lightgray;
+        --boring-jerk: lightgray;
+        --boring-help: black;
+        --legal-jerk: darkslategray;
+        --legal-help: lightgray;
+      }
+      body {
+        background: var(--boring-jerk);
+        color: var(--boring-help);
+        margin: 0;
+      }
+      header {
+        background: var(--flash-jerk);
+        color: var(--flash-help);
+        height: 4em;
+      }
+      footer {
+        background: var(--legal-jerk);
+        color: var(--legal-help);
+        height: 4em;
+      }
+      main {
+        height: calc(100vh - 8em);
+      }
+      header, main, footer {
+        box-sizing: border-box;
+        padding: 1em;
+      }
+      *:first-child {
+        margin-top: 0;
+      }
+      *:last-child {
+        margin-bottom: 0;
+      }
+    </style>
+
+    <script src="../src/charchunks.js"></script>
+
+  </head>
+  <body>
+    <header>
+      <h2>Demo of keystroking and barcode scanning</h2>
+    </header>
+
+    <main>
+
+    </main>
+
+    <footer>
+      <h3>Got it?</h3>
+    </footer>
+
+
+  </body>
+</html>
