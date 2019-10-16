@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <title>keyboardEventProperties - streaming</title>
+
+  <style type="text/css">
+    body {
+      padding-top: 8em;
+      margin: .5em;
+    }
+    form {
+      position: fixed;
+      padding: .5em;
+      width: 100%;
+      top: 0;
+      background: white;
+    }
+    input, button {
+      padding: .333em .667em;
+      font-size: inherit;
+    }
+    .eventProperty {
+      display: table-cell;
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+      width: 6em;
+      background: lightgreen;
+    }
+    .eventProperty > * {
+      height: 1.25em;
+      margin: .25em 0;
+    }
+    .approved {
+      background: lightgreen;
+    }
+    .deprecated {
+      background: pink;
+    }
+    .tip {
+      display: inline-block;
+      margin: 0 .25em;
+      padding: .333em .667em;
+    }
+  </style>
+
+  <script type="text/javascript">
+    // const properties = [
+    //   'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
+    //   'charCode', 'keyCode', 'keyIdentifier', 'which',
+    //   'code', 'isComposing', 'key', 'location', 'repeat'
+    // ];
+    const properties = [
+      'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
+      'charCode', 'keyCode', 'which',
+      'code', 'key', 'location', 'repeat'
+    ];
+    const deprecated = ['charCode', 'keyCode', 'keyIdentifier', 'which'];
+    let buffer = '', timeout;
+    function keyListener (event) {
+      console.log('keyListener');
+      console.log(event);
+      function propertyValue (val) {
+        if (typeof val === 'boolean') {
+          return val ? '&radic;' : '&nbsp;';
+        } else {
+          return String(val);
+        }
+      }
+      function buildRowHeader () {
+        let cell = document.createElement('div');
+        cell.className = 'eventProperty';
+
+        let title = document.createElement('div');
+        title.className = 'propertyName';
+        title.innerHTML = 'property';
+
+        let type = document.createElement('div');
+        type.className = 'propertyValue';
+        type.innerHTML = event.type;
+
+        cell.appendChild(title);
+        cell.appendChild(type);
+        return cell;
+      }
+      function buildDisplayCell (prop) {
+        let cell = document.createElement('div');
+        cell.className = 'eventProperty';
+        cell.className += deprecated.includes(prop) ? ' deprecated' : ' approved';
+
+        let title = document.createElement('div');
+        title.className = 'propertyName';
+        title.innerHTML = prop;
+
+        let value = document.createElement('div');
+        value.className = 'propertyValue';
+        value.innerHTML = event[prop] ? propertyValue(event[prop]) : '&nbsp;';
+
+        cell.appendChild(title);
+        cell.appendChild(value);
+        return cell;
+      }
+      function buildSingular (parentNode, tagName) {
+        parentNode.appendChild(document.createElement(tagName)).scrollIntoView(true);
+      }
+      function buildText (parentNode, textString) {
+        parentNode.appendChild(document.createTextNode(textString));
+      }
+      clearTimeout(timeout);
+      document.body.appendChild(buildRowHeader());
+      properties.forEach(prop => document.body.appendChild(buildDisplayCell(prop)));
+      if ( event.type == 'keypress') {
+        buffer += event.key + ' ';
+      }
+      document.body.appendChild(document.createElement('br'));
+      buildSingular (document.body, 'br');
+      timeout = setTimeout(function () {
+        buildText (document.body, buffer);
+        buffer = '';
+        buildSingular (document.body, 'hr');
+      }, 3000);
+    }
+
+    window.onload = function () {
+      const input = document.documentElement;
+      input.addEventListener('keydown', keyListener);
+      input.addEventListener('keypress', keyListener);
+      const doc = document.documentElement;
+      doc.addEventListener('keydown', keyListener);
+      doc.addEventListener('keypress', keyListener);
+    };
+
+  </script>
+
+</head>
+<body>
+
+  <form>
+    <input><button type="reset">Clear</button>
+    <span class="tip approved">approved</span>
+    <span class="tip deprecated">deprecated</span>
+    <h2>Values for keydown / keypress events</h2>
+  </form>
+
+
+</body>
+</html>
