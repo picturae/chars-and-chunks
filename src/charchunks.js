@@ -32,12 +32,12 @@ const charChuncks = (function () {
    * @returns {HTMLElement} normalised input
    */
   const overview = function () {
-    console.log('keyOverview called')
+    console.log('overview called')
   }
 
   return {
     hotkey: hotkey,
-    evaluate: evaluate,
+    barcode: barcode,
     overview: overview,
   }
 
