@@ -1,0 +1,54 @@
+{
+  "name": "chars-and-chunks",
+  "version": "1.0.0",
+  "description": "Detect, seperate and handle hotkeys and barcodes ",
+  "main": "dist/charchunks.js",
+  "module": "module/charchunks.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "prebuild": "clear-folder dist module && prettier './src/*.js' --write",
+    "build": "rollup --config",
+    "pretest": "eslint src/*.js",
+    "test": "echo \"Warning: no tests yet\" && exit 0",
+    "posttest": "npm run build",
+    "watch": "onchange --initial \"src/*.js\" -- npm run test --silent"
+  },
+  "keywords": [
+    "detect",
+    "seperate",
+    "seperation",
+    "handle",
+    "handling",
+    "dispatch",
+    "character",
+    "hotkey",
+    "barcode",
+    "key",
+    "keystroke",
+    "keyboard",
+    "keyboard-event",
+    "shortcut"
+  ],
+  "author": "Onno van der Zee",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/picturae/charchunks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/picturae/charchunks/issues"
+  },
+  "homepage": "https://github.com/picturae/charchunks#readme",
+  "devDependencies": {
+    "clear-folder": "^1.1.2",
+    "clrscr": "^1.0.4",
+    "eslint": "^6.5.1",
+    "onchange": "^6.1.0",
+    "prettier": "^1.18.2",
+    "rollup": "^1.24.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-terser": "^5.1.2"
+  }
+}
