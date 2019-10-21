@@ -1,0 +1,86 @@
+<html>
+  <head>
+    <style type="text/css">
+      :root {
+        --flash-jerk: mediumvioletred;
+        --flash-help: lightgray;
+        --boring-jerk: lightgray;
+        --boring-help: black;
+        --legal-jerk: darkslategray;
+        --legal-help: lightgray;
+        --header-height: 6em;
+        --footer-height: 4em;
+      }
+      html, body {
+        height: 100%;
+      }
+      body {
+        background: var(--boring-jerk);
+        color: var(--boring-help);
+        font: 15px/1.25 sans-serif;
+        margin: 0;
+      }
+      header {
+        background: var(--flash-jerk);
+        color: var(--flash-help);
+        height: var(--header-height);
+      }
+      header h1 {
+        margin: 0;
+      }
+      customfooter {
+        display: block;
+        background: var(--legal-jerk);
+        color: var(--legal-help);
+        height: var(--footer-height);
+      }
+      main {
+        height: calc(100% - var(--header-height) - var(--footer-height));
+        min-height: var(--header-height);
+        overflow-y: auto;
+      }
+      header, main, customfooter {
+        box-sizing: border-box;
+        padding: 1em 12.5em 1em 1em;
+        position: relative;
+      }
+      button {
+        font: inherit;
+        position: absolute;
+        right: 1em;
+      }
+    </style>
+
+    <script src="../dist/charsAndChuncks.js"></script>
+
+  </head>
+  <body>
+    <header>
+      <button
+        onclick="document.body.removeChild(document.querySelector('header'))"
+      >remove header</button>
+      <h1>Demo of keystroking and barcode scanning</h1>
+      <div>The header is the context for the 'h' hotkey</div>
+    </header>
+
+    <main>
+      <button
+        onclick="document.querySelector('body > main').remove()"
+      >remove main element</button>
+      <div>The main element is the context for the 'm' hotkey</div>
+    </main>
+
+    <customfooter>
+      <button
+        onclick="document.body.removeChild(document.querySelector('customfooter'))"
+      >remove custom footer</button>
+      <div>The custom footer is the context for the 'f' hotkey</div>
+    </customfooter>
+
+    <script>
+    charsAndChuncks.hotkey ({ char: 'h', context: document.querySelector('header'), callback: function printH () {console.log('>>> h >>>')} })
+    charsAndChuncks.hotkey ({ char: 'm', context: document.querySelector('main'), callback: ()=>console.log('>>> m >>>'), comment: 'Prints ">>> m >>>" in the console' })
+    charsAndChuncks.hotkey ({ char: 'f', context: document.querySelector('customfooter'), callback: ()=>console.log('>>> f >>>') })
+    </script>
+  </body>
+</html>
