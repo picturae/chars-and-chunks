@@ -2,8 +2,8 @@
   "name": "chars-and-chunks",
   "version": "1.0.0",
   "description": "Detect, seperate and handle hotkeys and barcodes ",
-  "main": "dist/charchunks.js",
-  "module": "module/charchunks.js",
+  "main": "dist/charsAndChuncks.js",
+  "module": "module/charsAndChuncks.js",
   "directories": {
     "test": "test"
   },
@@ -35,12 +35,12 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/picturae/charchunks.git"
+    "url": "git+https://github.com/picturae/chars-and-chunks.git"
   },
   "bugs": {
-    "url": "https://github.com/picturae/charchunks/issues"
+    "url": "https://github.com/picturae/chars-and-chunks/issues"
   },
-  "homepage": "https://github.com/picturae/charchunks#readme",
+  "homepage": "https://github.com/picturae/chars-and-chunks#readme",
   "devDependencies": {
     "clear-folder": "^1.1.2",
     "clrscr": "^1.0.4",
