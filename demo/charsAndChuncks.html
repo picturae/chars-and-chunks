@@ -10,6 +10,8 @@
         --legal-help: lightgray;
         --header-height: 6em;
         --footer-height: 4em;
+        --opaque-lightgray: rgba(211,211,211,.92);
+        --opaque-black: rgba(0,0,0,.92);
       }
       html, body {
         height: 100%;
@@ -49,10 +51,38 @@
         position: absolute;
         right: 1em;
       }
+      button:nth-child(2) {
+        top: 3em;
+      }
+      button:nth-child(3) {
+        top: 5em;
+      }
+      pre {
+        position: absolute;
+        left: 1em;  top: 1em; right: 1em; bottom: 1em;
+        padding: 1em;
+        background: var(--opaque-lightgray);
+        color: var(--opaque-black);
+        border: 1px solid var(--opaque-black);
+        overflow: auto;
+      }
     </style>
 
     <script src="../dist/charsAndChuncks.js"></script>
-
+    <script>
+    function showOverview (ovvObj) {
+      let ovvString = JSON.stringify(ovvObj)
+      ovvString = ovvString
+        .replace( /{"entry"/g, '{\n\t"entry"' )
+        .replace( /,"comment"/g, ',\n\t"comment"' )
+        .replace( /},{/g, '\n},{' )
+        .replace( /}]/g, '\n}]' )
+      let panel = document.createElement('pre')
+      panel.textContent = ovvString;
+      document.body.appendChild(panel)
+      panel.addEventListener('click', function () {this.remove()})
+    }
+    </script>
   </head>
   <body>
     <header>
@@ -67,6 +97,9 @@
       <button
         onclick="document.querySelector('body > main').remove()"
       >remove main element</button>
+      <button
+        onclick="showOverview(charsAndChuncks.overview())"
+      >show overview</button>
       <div>The main element is the context for the 'm' hotkey and a all-digit barcode</div>
     </main>
 
@@ -78,10 +111,10 @@
     </customfooter>
 
     <script>
-    charsAndChuncks.hotkey ({ char: 'h', context: document.querySelector('header'), callback: function printH () {console.log('>>> h >>>')} })
+    charsAndChuncks.hotkey ({ char: 'h', context: document.querySelector('header'), callback: function printCharHInConsole () {console.log('>>> h >>>')} })
     charsAndChuncks.hotkey ({ char: 'm', context: document.querySelector('main'), callback: ()=>console.log('>>> m >>>'), comment: 'Prints ">>> m >>>" in the console' })
     charsAndChuncks.hotkey ({ char: 'f', context: document.querySelector('customfooter'), callback: ()=>console.log('>>> f >>>') })
-    charsAndChuncks.barcode ({ context: document.querySelector('header'), callback: function printH () {console.log('>>> any barcode >>>')} })
+    charsAndChuncks.barcode ({ context: document.querySelector('header'), callback: function printAnyBarcodeInConsole () {console.log('>>> any barcode >>>')} })
     charsAndChuncks.barcode ({ regex: /^\d+$/, context: document.querySelector('main'), callback: ()=>console.log('>>> all-digit barcode >>>'), comment: 'Prints ">>> all-digit barcode >>>" in the console' })
     charsAndChuncks.barcode ({ regex: /^\w+-\w+$/, context: document.querySelector('customfooter'), callback: ()=>console.log('>>> hyphen seperated barcode >>>') })
     </script>

@@ -4,7 +4,9 @@ const collectionManagement = (function() {
    */
   let references = new WeakMap()
   let requests = new Map()
-  // Process variables
+  /**
+   * Default regular expression.
+   */
   const catchAllRegExp = /^/
 
   const isSaneRegistration = function(props) {
@@ -18,8 +20,8 @@ const collectionManagement = (function() {
     const contextOK = props.context instanceof Node
     const callbackOK = typeof props.callback === 'function'
     // check optional comment
-    if (!props.comment || typeof props.comment !== 'string') {
-      props.comment = props.callback.name || `callback for ${props.char}`
+    if (!props.comment) {
+      props.comment = `callback for ${props.char || 'barcode'}`
     }
     const OK = matchOK && contextOK && callbackOK
     if (!OK) {
@@ -55,22 +57,29 @@ const collectionManagement = (function() {
   }
 
   /**
+   * Get valid data
+   * @private
+   * @param {Node} context
+   * @param {string | RegExp} entry
+   * @returns {object} data object
+   */
+  const getHandle = function(context, entry) {
+    if (context && context.parentNode && references.has(context)) {
+      return references.get(context)[entry]
+    }
+    // should we garbage collect programatically?
+  }
+
+  /**
    * Find the right data
    * @private
-   * @param {string} character | {object} regular expression
+   * @param {string | RegExp} entry
    * @returns {object} data object
    */
   const entryHandler = function(entry) {
     if (requests.has(entry)) {
       let requestedContext = requests.get(entry)
-      if (
-        requestedContext &&
-        requestedContext.parentNode &&
-        references.has(requestedContext)
-      ) {
-        return references.get(requestedContext)[entry]
-      }
-      // should we garbage collect programatically?
+      return getHandle(requestedContext, entry)
     }
   }
 
@@ -135,10 +144,33 @@ const collectionManagement = (function() {
 
   /**
    * Generate a list of active hotkeys and barcode watchers, optionally with their purpose
-   * @returns {HTMLElement} normalised input
+   * @returns {object}
    */
   const overview = function() {
     console.log('overview called')
+    let handles = { hotkey: [], barcode: [] }
+
+    requests.forEach((context, entry) => {
+      if (typeof entry === 'string') {
+        let handle = {
+          entry: entry,
+          comment: getHandle(context, entry).comment,
+        }
+        handles.hotkey.push(handle)
+      }
+    })
+
+    requests.forEach((context, entry) => {
+      if (entry instanceof RegExp) {
+        let handle = {
+          entry: 'barcode', //entry.toString(),
+          comment: getHandle(context, entry).comment,
+        }
+        handles.barcode.push(handle)
+      }
+    })
+    console.log(handles)
+    return handles
   }
 
   return {
