@@ -60,27 +60,30 @@
         onclick="document.body.removeChild(document.querySelector('header'))"
       >remove header</button>
       <h1>Demo of keystroking and barcode scanning</h1>
-      <div>The header is the context for the 'h' hotkey</div>
+      <div>The header is the context for the 'h' hotkey or any barcode</div>
     </header>
 
     <main>
       <button
         onclick="document.querySelector('body > main').remove()"
       >remove main element</button>
-      <div>The main element is the context for the 'm' hotkey</div>
+      <div>The main element is the context for the 'm' hotkey and a all-digit barcode</div>
     </main>
 
     <customfooter>
       <button
         onclick="document.body.removeChild(document.querySelector('customfooter'))"
       >remove custom footer</button>
-      <div>The custom footer is the context for the 'f' hotkey</div>
+      <div>The custom footer is the context for the 'f' hotkey and a underscore seprated barcode</div>
     </customfooter>
 
     <script>
     charsAndChuncks.hotkey ({ char: 'h', context: document.querySelector('header'), callback: function printH () {console.log('>>> h >>>')} })
     charsAndChuncks.hotkey ({ char: 'm', context: document.querySelector('main'), callback: ()=>console.log('>>> m >>>'), comment: 'Prints ">>> m >>>" in the console' })
     charsAndChuncks.hotkey ({ char: 'f', context: document.querySelector('customfooter'), callback: ()=>console.log('>>> f >>>') })
+    charsAndChuncks.barcode ({ context: document.querySelector('header'), callback: function printH () {console.log('>>> any barcode >>>')} })
+    charsAndChuncks.barcode ({ regex: /^\d+$/, context: document.querySelector('main'), callback: ()=>console.log('>>> all-digit barcode >>>'), comment: 'Prints ">>> all-digit barcode >>>" in the console' })
+    charsAndChuncks.barcode ({ regex: /^\w+-\w+$/, context: document.querySelector('customfooter'), callback: ()=>console.log('>>> hyphen seperated barcode >>>') })
     </script>
   </body>
 </html>

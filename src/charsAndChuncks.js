@@ -2,15 +2,36 @@ import { collectionManagement } from './collectionManagement.js'
 
 const charsAndChuncksModule = (function() {
   // Maximum time the barcode scanner takes to send the next character
-  let transmissionDelayLimit = 30
-  // General treshold to prevent accidental elbow on keyboard proceesing
+  let safeIntermission = 30
+  // General treshold to prevent accidental elbow-on-keyboard processing
   let minimalBarcodeLength = 6
+  const allowedModifiers = ['Alt', 'Shift']
   // Process variables
   let streamTimeout = 0
   let stream = ''
 
+  const settleStream = function() {
+    // We only deal with single characters or barcodes.
+    if (stream.length >= minimalBarcodeLength) {
+      //console.log(`handle as barcode: ${stream} (${stream.length})`)
+      let handle = collectionManagement.barcodeHandler(stream)
+      if (handle) {
+        handle.callback()
+      }
+    } else if (stream.length === 1) {
+      //console.log(`handle as character: ${stream} (${stream.length})`)
+      let handle = collectionManagement.entryHandler(stream)
+      if (handle) {
+        handle.callback()
+      }
+    } else {
+      //console.log(`invalid stream length: ${stream.length} (${stream})`)
+    }
+    stream = ''
+  }
+
   const streamHandler = function(event) {
-    console.log(`input: ${event.key}`)
+    //console.log(`input: ${event.key}`)
     if (streamTimeout) {
       clearTimeout(streamTimeout)
     }
@@ -23,30 +44,22 @@ const charsAndChuncksModule = (function() {
     let notOurScope = !charByChar || fromFormControl
 
     if (notOurScope) {
-      console.log(`process characters: ${event.key}`)
-      console.log(`process target: ${event.target.tagName}`)
-      clearTimeout(streamTimeout)
-      stream = ''
-      return
+      //console.log(`process characters: '${event.key}' in stream: '${stream}'`)
+      if (event.key === 'Enter') {
+        // Do not wait for new characters
+        settleStream()
+        return
+      } else if (!allowedModifiers.includes(event.key)) {
+        clearTimeout(streamTimeout)
+        stream = ''
+        return
+      }
+      // With allowedModifiers we want to set a new timeout
+    } else {
+      stream += event.key
     }
 
-    stream += event.key
-
-    streamTimeout = setTimeout(function() {
-      // We only deal with single characters or barcodes.
-      if (stream.length >= minimalBarcodeLength) {
-        console.log(`handle as barcode: ${stream} (${stream.length})`)
-      } else if (stream.length === 1) {
-        console.log(`handle as character: ${stream} (${stream.length})`)
-        let handle = collectionManagement.hotkeyHandler(stream)
-        if (handle) {
-          handle.callback()
-        }
-      } else {
-        console.log(`invalid stream length: ${stream.length} (${stream})`)
-      }
-      stream = ''
-    }, transmissionDelayLimit)
+    streamTimeout = setTimeout(settleStream, safeIntermission)
   }
 
   window.addEventListener('keydown', streamHandler)

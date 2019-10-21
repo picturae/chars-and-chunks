@@ -4,6 +4,8 @@ const collectionManagement = (function() {
    */
   let references = new WeakMap()
   let requests = new Map()
+  // Process variables
+  const catchAllRegExp = /^/
 
   const isSaneRegistration = function(props) {
     const matchOK = (function() {
@@ -21,7 +23,7 @@ const collectionManagement = (function() {
     }
     const OK = matchOK && contextOK && callbackOK
     if (!OK) {
-      console.error('Wrong properties for registering hotkeys or barcodes')
+      console.error('Wrong properties for registering hotkeys or barcodes!')
     }
     return OK
   }
@@ -49,23 +51,24 @@ const collectionManagement = (function() {
       callback: props.callback,
       comment: props.comment,
     }
-    console.log(`hotkey registered: ${props.char}`)
+    //console.log(`hotkey registered: ${props.char}`)
   }
 
   /**
    * Find the right data
    * @private
-   * @param {string} character - single character
+   * @param {string} character | {object} regular expression
+   * @returns {object} data object
    */
-  const hotkeyHandler = function(character) {
-    if (requests.has(character)) {
-      let requestedContext = requests.get(character)
+  const entryHandler = function(entry) {
+    if (requests.has(entry)) {
+      let requestedContext = requests.get(entry)
       if (
         requestedContext &&
         requestedContext.parentNode &&
         references.has(requestedContext)
       ) {
-        return references.get(requestedContext)[character]
+        return references.get(requestedContext)[entry]
       }
       // should we garbage collect programatically?
     }
@@ -80,19 +83,55 @@ const collectionManagement = (function() {
   const registerBarcode = function(props) {
     delete props.char
     if (!props.regex) {
-      props.regex = /.+/
+      props.regex = catchAllRegExp
     }
     if (!isSaneRegistration(props)) {
       return
     }
-    console.log(`barcode registered`)
+
+    // Register context with regular expression in a Map
+    requests.set(props.regex, props.context)
+    if (!references.has(props.context)) {
+      references.set(props.context, {})
+    }
+    // Register data with context in a WeakMap
+    references.get(props.context)[props.regex] = {
+      callback: props.callback,
+      comment: props.comment,
+    }
+    //console.log(`barcode registered: ${props.regex}`)
+  }
+
+  /**
+   * Find the right RegExp for barcode
+   * @private
+   * @param {string} barcode
+   * @returns {RegExp}
+   */
+  const barcodeMatch = function(barcode) {
+    var regex = catchAllRegExp
+
+    requests.forEach((reqValue, reqKey) => {
+      if (reqKey instanceof RegExp && reqKey.test(barcode)) {
+        // find the most complex RegExp
+        if (reqKey.toString().length > regex.toString().length) {
+          regex = reqKey
+        }
+      }
+    })
+    return regex
   }
 
   /**
    * Find the right data
    * @private
+   * @param {string} barcode
+   * @returns {object} data object
    */
-  const barcodeHandler = function() {}
+  const barcodeHandler = function(barcode) {
+    const regex = barcodeMatch(barcode)
+    return entryHandler(regex)
+  }
 
   /**
    * Generate a list of active hotkeys and barcode watchers, optionally with their purpose
@@ -104,7 +143,7 @@ const collectionManagement = (function() {
 
   return {
     registerHotkey: registerHotkey,
-    hotkeyHandler: hotkeyHandler,
+    entryHandler: entryHandler,
     registerBarcode: registerBarcode,
     barcodeHandler: barcodeHandler,
     overview: overview,
