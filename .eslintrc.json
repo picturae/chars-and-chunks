@@ -1,13 +1,22 @@
 {
   "env": {
     "browser": true,
-    "es6": true
+    "es6": true,
+    "jasmine": true,
+    "jest/globals": true
   },
-  "extends": "eslint:recommended",
+  "extends": [
+    "eslint:recommended",
+    "plugin:jasmine/recommended"
+  ],
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
+  "plugins": [
+    "jasmine",
+    "jest"
+  ],
   "rules": {
     "no-unused-vars": ["warn"]
   }

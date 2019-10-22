@@ -70,9 +70,14 @@ const charsAndChunksModule = (function() {
       barcode: collectionManagement.registerBarcode,
       overview: collectionManagement.overview,
     },
+    testAPI: {
+      hotkeyHandler: collectionManagement.hotkeyHandler,
+      barcodeHandler: collectionManagement.barcodeHandler,
+    },
   }
 })()
 
 const charsAndChunks = charsAndChunksModule.publicAPI
+const charsAndTests = charsAndChunksModule.testAPI
 
-export { charsAndChunks }
+export { charsAndChunks, charsAndTests }
