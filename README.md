@@ -30,15 +30,15 @@ hotkeys and barcodes.
 
     let header = document.querySelector('header')
     let logH = function () {console.log('h pressed')}
-    charsAndChuncks.hotkey ({ char: 'h', context: header, callback: logH })
+    charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH })
 
     let main = document.querySelector('main')
     let logM = () => {console.log('m pressed')}
-    charsAndChuncks.hotkey ({ char: 'm', context: main, callback: logM, comment: 'Prints "m pressed" in the console' })
+    charsAndChunks.hotkey ({ char: 'm', context: main, callback: logM, comment: 'Prints "m pressed" in the console' })
 
     let customfooter = document.querySelector('customfooter')
     function logF () {console.log('f pressed')}
-    charsAndChuncks.hotkey ({ char: 'f', context: customfooter, callback: logF })
+    charsAndChunks.hotkey ({ char: 'f', context: customfooter, callback: logF })
 
 To set up a barcode the same object can be used, with member regex instead of char.
 * 'regex' is the regular expression your barcode needs to match.
@@ -46,16 +46,16 @@ When regex is omitted, all barcodes are valid:
 
     let header = document.querySelector('header')
     let logAnyBarcode = function () {console.log('any barcode scanned')}
-    charsAndChuncks.barcode ({ context: header, callback: logAnyBarcode })
+    charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
 
     let main = document.querySelector('main')
     let logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
-    charsAndChuncks.barcode ({ regex: /^\d+$/, context: main, callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
+    charsAndChunks.barcode ({ regex: /^\d+$/, context: main, callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
 
     let customfooter = document.querySelector('customfooter')
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
-    charsAndChuncks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode })
+    charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode })
 
 To get an overview of effective keys and barcodes, completed with a comment:
 
-    charsAndChuncks.overview()
+    charsAndChunks.overview()

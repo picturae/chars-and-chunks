@@ -1,5 +1,5 @@
-import { charsAndChuncks } from './charsAndChuncks.js'
+import { charsAndChunks } from './charsAndChunks'
 
-const index = charsAndChuncks
+const index = charsAndChunks
 
 export default index

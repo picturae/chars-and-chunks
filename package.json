@@ -2,8 +2,8 @@
   "name": "chars-and-chunks",
   "version": "1.0.0",
   "description": "Detect, seperate and handle hotkeys and barcodes ",
-  "main": "dist/charsAndChuncks.js",
-  "module": "module/charsAndChuncks.js",
+  "main": "dist/charsAndChunks.js",
+  "module": "module/charsAndChunks.js",
   "directories": {
     "test": "test"
   },
@@ -29,7 +29,8 @@
     "keystroke",
     "keyboard",
     "keyboard-event",
-    "shortcut"
+    "shortcut",
+    "front-end"
   ],
   "author": "Onno van der Zee",
   "license": "ISC",
@@ -42,12 +43,16 @@
   },
   "homepage": "https://github.com/picturae/chars-and-chunks#readme",
   "devDependencies": {
+    "@babel/core": "^7.6.4",
+    "@babel/preset-env": "^7.6.3",
     "clear-folder": "^1.1.2",
     "clrscr": "^1.0.4",
     "eslint": "^6.5.1",
+    "jest": "^24.9.0",
     "onchange": "^6.1.0",
     "prettier": "^1.18.2",
-    "rollup": "^1.24.0",
+    "rollup": "^1.25.1",
+    "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-terser": "^5.1.2"
   }

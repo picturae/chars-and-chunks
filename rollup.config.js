@@ -2,7 +2,7 @@
 import commonjs from 'rollup-plugin-commonjs'
 import { terser } from 'rollup-plugin-terser'
 
-const name = 'charsAndChuncks'
+const name = 'charsAndChunks'
 
 export default {
   input: `src/index.js`,

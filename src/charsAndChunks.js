@@ -1,6 +1,6 @@
-import { collectionManagement } from './collectionManagement.js'
+import { collectionManagement } from './collectionManagement'
 
-const charsAndChuncksModule = (function() {
+const charsAndChunksModule = (function() {
   // Maximum time the barcode scanner takes to send the next character
   let safeIntermission = 30
   // General treshold to prevent accidental elbow-on-keyboard processing
@@ -73,6 +73,6 @@ const charsAndChuncksModule = (function() {
   }
 })()
 
-const charsAndChuncks = charsAndChuncksModule.publicAPI
+const charsAndChunks = charsAndChunksModule.publicAPI
 
-export { charsAndChuncks }
+export { charsAndChunks }
