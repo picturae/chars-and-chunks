@@ -3,25 +3,28 @@
 Chars and Chunks catches single keystrokes and input from barcode scanners in
 such way these can used to set the flow of a webapp.
 
-While keystrokes are mapped to a character (yes), barcodes match a
-regular expression.
+While keystrokes are mapped to a character (yes!), barcodes match a
+regular expression. When a keystroke or barcode is caught, its context (an
+element in the document) is matched. When the context is inside the document tree,
+the callback function is called with the keystroke or barcode as an argument.
+
+Chars and Chunks offers a overview of effective keys and barcodes.
 
 Chars and Chunks will not interfere when the user types text in input fields
 or textareas.
-
-The effectivity of a keystroke or a barcode scan can be tied to for example,
-the top HTML element in a view where the functionality is meaningfull.
-
-Chars and Chunks offers a overview of effective keys and barcodes.
 
 ## Install
 
 Install the package as npm package. You can require the package or use it as
 a module.
 
-## Useage
+## Usage
 
 To set up a hotkey an object with members char, context and callback is needed.
+* 'char' is the hotkey
+* 'context' is a reference an element, i.e. the top element in a controlled view
+* 'callback' the function to execute
+* 'comment' a comment or description of the callback function
 Member comment is optional, but can be used to present an overview of
 hotkeys and barcodes.
 
@@ -37,7 +40,9 @@ hotkeys and barcodes.
     function logF () {console.log('f pressed')}
     charsAndChuncks.hotkey ({ char: 'f', context: customfooter, callback: logF })
 
-To set up a barcode the same object can be used, with member regex instead of char. When regex is omitted, all barcodes are valid:
+To set up a barcode the same object can be used, with member regex instead of char.
+* 'regex' is the regular expression your barcode needs to match.
+When regex is omitted, all barcodes are valid:
 
     let header = document.querySelector('header')
     let logAnyBarcode = function () {console.log('any barcode scanned')}
