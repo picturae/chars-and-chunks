@@ -111,12 +111,27 @@
     </customfooter>
 
     <script>
-    charsAndChuncks.hotkey ({ char: 'h', context: document.querySelector('header'), callback: function printCharHInConsole () {console.log('>>> h >>>')} })
-    charsAndChuncks.hotkey ({ char: 'm', context: document.querySelector('main'), callback: ()=>console.log('>>> m >>>'), comment: 'Prints ">>> m >>>" in the console' })
-    charsAndChuncks.hotkey ({ char: 'f', context: document.querySelector('customfooter'), callback: ()=>console.log('>>> f >>>') })
-    charsAndChuncks.barcode ({ context: document.querySelector('header'), callback: function printAnyBarcodeInConsole () {console.log('>>> any barcode >>>')} })
-    charsAndChuncks.barcode ({ regex: /^\d+$/, context: document.querySelector('main'), callback: ()=>console.log('>>> all-digit barcode >>>'), comment: 'Prints ">>> all-digit barcode >>>" in the console' })
-    charsAndChuncks.barcode ({ regex: /^\w+-\w+$/, context: document.querySelector('customfooter'), callback: ()=>console.log('>>> hyphen seperated barcode >>>') })
+    let header = document.querySelector('header')
+    let main = document.querySelector('main')
+    let customfooter = document.querySelector('customfooter')
+
+    let logH = function () {console.log('h pressed')}
+    charsAndChuncks.hotkey ({ char: 'h', context: header, callback: logH })
+
+    let logM = () => {console.log('m pressed')}
+    charsAndChuncks.hotkey ({ char: 'm', context: main, callback: logM, comment: 'Prints "m pressed" in the console' })
+
+    function logF () {console.log('f pressed')}
+    charsAndChuncks.hotkey ({ char: 'f', context: customfooter, callback: logF })
+
+    let logAnyBarcode = function () {console.log('any barcode scanned')}
+    charsAndChuncks.barcode ({ context: header, callback: logAnyBarcode })
+
+    logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
+    charsAndChuncks.barcode ({ regex: /^\d+$/, context: main, callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
+
+    function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
+    charsAndChuncks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode })
     </script>
   </body>
 </html>

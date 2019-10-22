@@ -16,13 +16,13 @@ const charsAndChuncksModule = (function() {
       //console.log(`handle as barcode: ${stream} (${stream.length})`)
       let handle = collectionManagement.barcodeHandler(stream)
       if (handle) {
-        handle.callback()
+        handle.callback(stream)
       }
     } else if (stream.length === 1) {
       //console.log(`handle as character: ${stream} (${stream.length})`)
       let handle = collectionManagement.entryHandler(stream)
       if (handle) {
-        handle.callback()
+        handle.callback(stream)
       }
     } else {
       //console.log(`invalid stream length: ${stream.length} (${stream})`)

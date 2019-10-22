@@ -3,6 +3,9 @@ const collectionManagement = (function() {
    * Map of contexts holding an object with a single charcter, a callback and optionally a comment
    */
   let references = new WeakMap()
+  /**
+   * Map of characters and regular expressions holding a context.
+   */
   let requests = new Map()
   /**
    * Default regular expression.
