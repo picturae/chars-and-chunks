@@ -57,30 +57,45 @@
       button:nth-child(3) {
         top: 5em;
       }
-      pre {
-        position: absolute;
-        left: 1em;  top: 1em; right: 1em; bottom: 1em;
+      table {
+        position: fixed;
+        left: 50%;  top: 50%;
+        transform: translate(-50%,-50%);
         padding: 1em;
         background: var(--opaque-lightgray);
         color: var(--opaque-black);
         border: 1px solid var(--opaque-black);
         overflow: auto;
       }
+      td, th {
+        padding: .5rem;
+        text-align: left;
+        vertical-align: top;
+      }
+      thead {
+        font-size: 1.667em;
+      }
     </style>
 
     <script src="../dist/charsAndChuncks.js"></script>
     <script>
-    function showOverview (ovvObj) {
-      let ovvString = JSON.stringify(ovvObj)
-      ovvString = ovvString
-        .replace( /{"entry"/g, '{\n\t"entry"' )
-        .replace( /,"comment"/g, ',\n\t"comment"' )
-        .replace( /},{/g, '\n},{' )
-        .replace( /}]/g, '\n}]' )
-      let panel = document.createElement('pre')
-      panel.textContent = ovvString;
+    function showOverview (ctrl, ovvObj) {
+      ctrl.disabled = true
+      let htmlString = ``
+      for (let prop in ovvObj) {
+        htmlString += `<thead><th colspan="2">${prop}</th></thead><tbody>`
+        for (let item of ovvObj[prop]) {
+          htmlString += `<tr><th>${item.entry}</th><td>${item.comment}</td></tr>`
+        }
+        htmlString += `</tbody>`
+      }
+      let panel = document.createElement('table')
+      panel.innerHTML = htmlString;
       document.body.appendChild(panel)
-      panel.addEventListener('click', function () {this.remove()})
+      panel.addEventListener('click', function () {
+        ctrl.disabled = false
+        this.remove()
+      })
     }
     </script>
   </head>
@@ -98,7 +113,7 @@
         onclick="document.querySelector('body > main').remove()"
       >remove main element</button>
       <button
-        onclick="showOverview(charsAndChuncks.overview())"
+        onclick="showOverview(this, charsAndChuncks.overview())"
       >show overview</button>
       <div>The main element is the context for the 'm' hotkey and a all-digit barcode</div>
     </main>

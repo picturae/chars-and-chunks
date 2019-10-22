@@ -150,29 +150,35 @@ const collectionManagement = (function() {
    * @returns {object}
    */
   const overview = function() {
-    console.log('overview called')
+    //console.log('overview called')
     let handles = { hotkey: [], barcode: [] }
 
     requests.forEach((context, entry) => {
       if (typeof entry === 'string') {
-        let handle = {
-          entry: entry,
-          comment: getHandle(context, entry).comment,
+        let handle = getHandle(context, entry)
+        if (handle) {
+          let toEndUser = {
+            entry: entry,
+            comment: handle.comment,
+          }
+          handles.hotkey.push(toEndUser)
         }
-        handles.hotkey.push(handle)
       }
     })
 
     requests.forEach((context, entry) => {
       if (entry instanceof RegExp) {
-        let handle = {
-          entry: 'barcode', //entry.toString(),
-          comment: getHandle(context, entry).comment,
+        let handle = getHandle(context, entry)
+        if (handle) {
+          let toEndUser = {
+            entry: 'barcode', //entry.toString(),
+            comment: getHandle(context, entry).comment,
+          }
+          handles.barcode.push(toEndUser)
         }
-        handles.barcode.push(handle)
       }
     })
-    console.log(handles)
+    //console.log(handles)
     return handles
   }
 
