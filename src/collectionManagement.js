@@ -184,7 +184,7 @@ const collectionManagement = (function() {
 
   return {
     registerHotkey: registerHotkey,
-    entryHandler: entryHandler,
+    hotkeyHandler: entryHandler,
     registerBarcode: registerBarcode,
     barcodeHandler: barcodeHandler,
     overview: overview,

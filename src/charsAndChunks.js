@@ -20,7 +20,7 @@ const charsAndChunksModule = (function() {
       }
     } else if (stream.length === 1) {
       //console.log(`handle as character: ${stream} (${stream.length})`)
-      let handle = collectionManagement.entryHandler(stream)
+      let handle = collectionManagement.hotkeyHandler(stream)
       if (handle) {
         handle.callback(stream)
       }
