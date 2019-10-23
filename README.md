@@ -59,3 +59,10 @@ When regex is omitted, all barcodes are valid:
 To get an overview of effective keys and barcodes, completed with a comment:
 
     charsAndChunks.overview()
+
+## Disclaimer
+
+Chars and Chunks does not attempt to avoid clashes with accesskeys. When you
+configure a keystroke for an accesskey to be a hotkey, both the accesskey and
+the hotkey are executed. Avoid clashes with accesskeys by not configuring
+keystrokes combined with an Alt-key or Option-key.

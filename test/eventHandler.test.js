@@ -1,9 +1,15 @@
-import { charsAndChunks, charsAndTests } from '../src/charsAndChunks'
+import { collectionManagement } from '../src/collectionManagement'
+import { charsAndChunks } from '../src/charsAndChunks' //required. duh
 
 describe("It's all around a keyboard event", function() {
+  typeof charsAndChunks // have eslint to shut up
   let keyStrokes = {}
+  let dispatchEightTimesCapitalB
 
   beforeAll(() => {
+    //enable testing code with setTimeout
+    jest.useFakeTimers()
+
     keyStrokes.f = new KeyboardEvent('keydown', {
       charCode: 0,
       code: 'KeyF',
@@ -28,38 +34,103 @@ describe("It's all around a keyboard event", function() {
       keyCode: 16,
       which: 16,
     })
+
+    keyStrokes.Backspace = new KeyboardEvent('keydown', {
+      charCode: 0,
+      code: 'Backspace',
+      key: 'Backspace',
+      keyCode: 8,
+      which: 8,
+    })
+
+    keyStrokes.Enter = new KeyboardEvent('keydown', {
+      charCode: 0,
+      code: 'Enter',
+      key: 'Enter',
+      keyCode: 13,
+      which: 13,
+    })
+
+    dispatchEightTimesCapitalB = function() {
+      for (let i = 0; i < 8; i++) {
+        window.dispatchEvent(keyStrokes.Shift)
+        window.dispatchEvent(keyStrokes.B)
+      }
+    }
+  })
+
+  afterEach(() => {
+    // destroy every spy
+    jest.restoreAllMocks()
   })
 
   /* Test event handling */
 
   test('A single character is sent to the hotkeyHandler', () => {
+    const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
+    const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
     window.dispatchEvent(keyStrokes.f)
-    setTimeout(function() {
-      expect(charsAndTests.hotkeyHandler).toHaveBeenCalledWidth('f')
-      expect(charsAndTests.barcodeHandler).not.toHaveBeenCalledWidth('f')
-    }, 50)
+    jest.runAllTimers()
+
+    expect(spyHotkey).toHaveBeenCalledWith('f')
+    expect(spyBarcode).not.toHaveBeenCalled()
   })
 
-  test('A barcode is sent to the barcodeHandler', () => {
-    let i = 0
-    while (i < 9) {
-      window.dispatchEvent(keyStrokes.Shift)
-      window.dispatchEvent(keyStrokes.B)
-      i++
-    }
-    setTimeout(function() {
-      expect(charsAndTests.hotkeyHandler).not.toHaveBeenCalledWidth('BBBBBBBB')
-      expect(charsAndTests.barcodeHandler).toHaveBeenCalledWidth('BBBBBBBB')
-    }, 50)
+  test('A sequence is sent to the barcodeHandler', () => {
+    const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
+    const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
+    dispatchEightTimesCapitalB()
+    jest.runAllTimers()
+
+    expect(spyHotkey).not.toHaveBeenCalled()
+    expect(spyBarcode).toHaveBeenCalledWith('BBBBBBBB')
   })
 
-  test('A seqence of 2 characters is not sent to a handler', () => {
+  test('A sequence of 2 characters is not sent to a handler', () => {
+    const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
+    const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
     window.dispatchEvent(keyStrokes.f)
     window.dispatchEvent(keyStrokes.Shift)
     window.dispatchEvent(keyStrokes.B)
-    setTimeout(function() {
-      expect(charsAndTests.hotkeyHandler).not.toHaveBeenCalledWidth('fB')
-      expect(charsAndTests.barcodeHandler).not.toHaveBeenCalledWidth('fB')
-    }, 50)
+    jest.runAllTimers()
+
+    expect(spyHotkey).not.toHaveBeenCalled()
+    expect(spyBarcode).not.toHaveBeenCalled()
+  })
+
+  test('A sequence ending with Enter will not send the Enter', () => {
+    window.dispatchEvent(keyStrokes.Enter)
+    dispatchEightTimesCapitalB()
+    const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
+    jest.runAllTimers()
+
+    expect(spyBarcode).toHaveBeenCalledWith('BBBBBBBB')
+  })
+
+  test('A Backspace will erase the sequence', () => {
+    const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
+    const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
+    dispatchEightTimesCapitalB()
+    window.dispatchEvent(keyStrokes.Backspace)
+    window.dispatchEvent(keyStrokes.Enter)
+    jest.runAllTimers()
+
+    expect(spyHotkey).not.toHaveBeenCalled()
+    expect(spyBarcode).not.toHaveBeenCalled()
+  })
+
+  test('A single character entered in an input-field is not sent to a handler', () => {
+    const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
+    const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
+    document.body.innerHTML = `<input />`
+    const input = document.querySelector('input')
+    input.addEventListener('keydown', function(event) {
+      this.value = event.key
+    })
+    input.dispatchEvent(keyStrokes.f)
+
+    expect(input.value).toBe('f')
+    expect(spyHotkey).not.toHaveBeenCalled()
+    expect(spyBarcode).not.toHaveBeenCalled()
   })
 })

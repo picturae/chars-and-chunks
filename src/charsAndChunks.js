@@ -44,7 +44,7 @@ const charsAndChunksModule = (function() {
     let notOurScope = !charByChar || fromFormControl
 
     if (notOurScope) {
-      //console.log(`process characters: '${event.key}' in stream: '${stream}'`)
+      //console.log(`out of scope: '${event.key}' in stream: '${stream}'`)
       if (event.key === 'Enter') {
         // Do not wait for new characters
         settleStream()

@@ -46,8 +46,13 @@
         padding: 1em 12.5em 1em 1em;
         position: relative;
       }
-      button {
+      p {
+        margin: .25em 0;
+      }
+      button, input, select, textarea {
         font: inherit;
+      }
+      button {
         position: absolute;
         right: 1em;
       }
@@ -105,24 +110,27 @@
         onclick="document.body.removeChild(document.querySelector('header'))"
       >remove header</button>
       <h1>Demo of keystroking and barcode scanning</h1>
-      <div>The header is the context for the 'h' hotkey or any barcode</div>
+      <p>The header is the context for the 'h' hotkey or any barcode</p>
     </header>
 
     <main>
       <button
         onclick="document.querySelector('body > main').remove()"
       >remove main element</button>
-      <button
+      <button accesskey="o"
         onclick="showOverview(this, charsAndChunks.overview())"
       >show overview</button>
-      <div>The main element is the context for the 'm' hotkey and a all-digit barcode</div>
+      <p>The main element is the context for the 'm' hotkey and a all-digit barcode</p>
+      <input placeholder="try the input" type="text "/>
+      <p>There is an accesskey set on the "show overview" button</p>
+
     </main>
 
     <customfooter>
       <button
         onclick="document.body.removeChild(document.querySelector('customfooter'))"
       >remove custom footer</button>
-      <div>The custom footer is the context for the 'f' hotkey and a underscore seprated barcode</div>
+      <p>The custom footer is the context for the 'f' hotkey and a underscore seprated barcode</p>
     </customfooter>
 
     <script>
@@ -138,6 +146,11 @@
 
     function logF () {console.log('f pressed')}
     charsAndChunks.hotkey ({ char: 'f', context: customfooter, callback: logF })
+
+    function logAltCtrlO () {console.log('ø pressed')}
+    charsAndChunks.hotkey ({ char: 'ø', context: main, callback: logAltCtrlO, comment: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
+    function logAltShiftO () {console.log('Ø pressed')}
+    charsAndChunks.hotkey ({ char: 'Ø', context: main, callback: logAltShiftO, comment: 'same as accesskey "o" in chrome|ff/win' })
 
     let logAnyBarcode = function () {console.log('any barcode scanned')}
     charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
