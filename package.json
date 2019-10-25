@@ -10,10 +10,10 @@
   "scripts": {
     "prebuild": "clear-folder dist module && prettier './{src,test}/*.js' --write",
     "build": "rollup --config",
+    "dev": "npm run test && npm run build",
     "pretest": "eslint {src,test}/*.js",
-    "test": "echo \"Warning: no tests yet\" && exit 0",
-    "posttest": "npm run build",
-    "watch": "onchange --initial \"{src,test}/*.js\" -- npm run test --silent"
+    "test": "jest",
+    "watch": "onchange --initial \"{src,test}/*.js\" -- npm run dev --silent"
   },
   "keywords": [
     "detect",
