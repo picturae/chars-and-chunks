@@ -12,7 +12,11 @@ const collectionManagement = (function() {
    */
   const catchAllRegExp = /^/
 
-  const isSaneRegistration = function(props) {
+  /**
+   * Check sanity of a registration object
+   * @param {object} props
+   */
+  const registrationSanity = function(props) {
     const matchOK = (function() {
       if (props.char) {
         return typeof props.char === 'string' && props.char.length === 1
@@ -20,7 +24,12 @@ const collectionManagement = (function() {
         return props.regex instanceof RegExp
       }
     })()
-    const contextOK = props.context instanceof Node
+    const contextOK = (function() {
+      if (typeof props.context === 'string') {
+        props.context = document.querySelector(props.context)
+      }
+      return props.context instanceof Node
+    })()
     const callbackOK = typeof props.callback === 'function'
     // check optional comment
     if (!props.comment) {
@@ -34,29 +43,39 @@ const collectionManagement = (function() {
   }
 
   /**
-   * Register a context to trigger a function when the character is pressed
-   * @param {string} character - single character
-   * @param {object} context - Node
-   * @param {function} callback
-   * @param {string} comment (optional)
+   * Register a context to trigger a function when any barcode is encountered
+   * @param {object} props
+   *    @member {string} char (optional)
+   *    @member {RegExp} regex (optional)
+   *    @member {object} context - Node
+   *    @member {function} callback
+   *    @member {string} comment (optional)
    */
-  const registerHotkey = function(props) {
-    delete props.regex
-    if (!isSaneRegistration(props)) {
-      return
-    }
+  const registerEntry = function(props) {
+    const entry = props.char || props.regex
 
-    // Register context with character in a Map
-    requests.set(props.char, props.context)
+    // Register context with regular expression in a Map
+    requests.set(entry, props.context)
     if (!references.has(props.context)) {
       references.set(props.context, {})
     }
     // Register data with context in a WeakMap
-    references.get(props.context)[props.char] = {
+    references.get(props.context)[entry] = {
       callback: props.callback,
       comment: props.comment,
     }
-    //console.log(`hotkey registered: ${props.char}`)
+  }
+
+  /**
+   * Register a context to trigger a function when the character is pressed
+   * @param {object} props
+   */
+  const registerHotkey = function(props) {
+    delete props.regex
+    if (registrationSanity(props)) {
+      registerEntry(props)
+      //console.log(`hotkey registered: ${props.char}`)
+    }
   }
 
   /**
@@ -88,30 +107,17 @@ const collectionManagement = (function() {
 
   /**
    * Register a context to trigger a function when any barcode is encountered
-   * @param {object} context - Node
-   * @param {function} callback
-   * @param {string} comment (optional)
+   * @param {object} props
    */
   const registerBarcode = function(props) {
     delete props.char
     if (!props.regex) {
       props.regex = catchAllRegExp
     }
-    if (!isSaneRegistration(props)) {
-      return
+    if (registrationSanity(props)) {
+      registerEntry(props)
+      //console.log(`barcode registered: ${props.regex}`)
     }
-
-    // Register context with regular expression in a Map
-    requests.set(props.regex, props.context)
-    if (!references.has(props.context)) {
-      references.set(props.context, {})
-    }
-    // Register data with context in a WeakMap
-    references.get(props.context)[props.regex] = {
-      callback: props.callback,
-      comment: props.comment,
-    }
-    //console.log(`barcode registered: ${props.regex}`)
   }
 
   /**
