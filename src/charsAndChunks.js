@@ -12,20 +12,21 @@ const charsAndChunksModule = (function() {
 
   const settleStream = function() {
     // We only deal with single characters or barcodes.
+    const settle = stream.join('')
     if (stream.length >= minimalBarcodeLength) {
-      //console.log(`handle as barcode: ${stream.join('')} (${stream.length})`)
-      let handle = collectionManagement.barcodeHandler(stream.join(''))
+      //console.log(`handle as barcode: ${settle} (${stream.length})`)
+      let handle = collectionManagement.barcodeHandler(settle)
       if (handle) {
-        handle.callback(stream)
+        handle.callback(settle)
       }
     } else if (stream.length === 1) {
-      //console.log(`handle as character: ${stream.join('')} (${stream.length})`)
-      let handle = collectionManagement.hotkeyHandler(stream.join(''))
+      //console.log(`handle as character: ${settle} (${stream.length})`)
+      let handle = collectionManagement.hotkeyHandler(settle)
       if (handle) {
-        handle.callback(stream)
+        handle.callback(settle)
       }
     } else {
-      //console.log(`invalid stream length: ${stream.length} (${stream.join('')})`)
+      //console.log(`invalid stream length: ${stream.length} (${settle})`)
     }
     stream = []
   }
