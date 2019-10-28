@@ -91,6 +91,20 @@ const collectionManagement = (function() {
   }
 
   /**
+   * Check for the node being inside the DOM
+   * @private
+   * @param {Node} node
+   * @returns {boolean} boolean
+   */
+  const isAttached = function(elm) {
+    return (
+      elm &&
+      (elm.getRootNode() instanceof Document ||
+        elm.getRootNode() instanceof ShadowRoot)
+    )
+  }
+
+  /**
    * Get valid data
    * @private
    * @param {Node} context
@@ -98,7 +112,7 @@ const collectionManagement = (function() {
    * @returns {object} data object
    */
   const getHandle = function(context, entry) {
-    if (context && context.parentNode && references.has(context)) {
+    if (isAttached(context) && references.has(context)) {
       return references.get(context)[entry]
     }
     // should we garbage collect programatically?
