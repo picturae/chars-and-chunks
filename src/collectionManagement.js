@@ -2,11 +2,21 @@ const collectionManagement = (function() {
   /**
    * Map of contexts holding an object with a single charcter, a callback and optionally a comment
    */
-  let references = new WeakMap()
+  let references
   /**
    * Map of characters and regular expressions holding a context.
    */
-  let requests = new Map()
+  let requests
+
+  /**
+   * Resuseable function for creating blank data objects
+   */
+  const createRunDataObjects = function() {
+    references = new WeakMap()
+    requests = new Map()
+  }
+  createRunDataObjects()
+
   /**
    * Default regular expression.
    */
@@ -14,6 +24,7 @@ const collectionManagement = (function() {
 
   /**
    * Check sanity of a registration object
+   * @private
    * @param {object} props
    */
   const registrationSanity = function(props) {
@@ -32,12 +43,13 @@ const collectionManagement = (function() {
     })()
     const callbackOK = typeof props.callback === 'function'
     // check optional comment
-    if (!props.comment) {
+    if (!props.comment || typeof props.comment !== 'string') {
       props.comment = `callback for ${props.char || 'barcode'}`
     }
     const OK = matchOK && contextOK && callbackOK
     if (!OK) {
       console.error('Wrong properties for registering hotkeys or barcodes!')
+      //console.log(props)
     }
     return OK
   }
@@ -99,6 +111,7 @@ const collectionManagement = (function() {
    * @returns {object} data object
    */
   const entryHandler = function(entry) {
+    //console.log(`entry to handle: ${entry}`)
     if (requests.has(entry)) {
       let requestedContext = requests.get(entry)
       return getHandle(requestedContext, entry)
@@ -142,7 +155,6 @@ const collectionManagement = (function() {
 
   /**
    * Find the right data
-   * @private
    * @param {string} barcode
    * @returns {object} data object
    */
@@ -194,6 +206,7 @@ const collectionManagement = (function() {
     registerBarcode: registerBarcode,
     barcodeHandler: barcodeHandler,
     overview: overview,
+    reset: createRunDataObjects,
   }
 })()
 

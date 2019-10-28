@@ -3,7 +3,7 @@ import { collectionManagement } from '../src/collectionManagement'
 describe('Good registration is handled well', function() {
   let registrations = {}
 
-  beforeAll(() => {
+  beforeEach(() => {
     document.body.innerHTML = '<header></header><main></main><footer></footer>'
 
     registrations.OK = {
@@ -18,13 +18,44 @@ describe('Good registration is handled well', function() {
     registrations.OK2 = {
       regex: /.+/,
       context: 'main',
-      callback: function(character) {
-        console.log(`We saw a '${character}'`)
+      callback: function(barcode) {
+        console.log(`We saw a '${barcode}'`)
       },
+    }
+
+    registrations.omittedRegex = {
+      context: document.querySelector('header'),
+      callback: function(barcode) {
+        console.log(`Any barcode could match this, but ${barcode} did.`)
+      },
+      comment: 'Catches the uncaught',
+    }
+
+    registrations.simpleRegex = {
+      regex: /\w+/,
+      context: document.querySelector('header'),
+      callback: function(barcode) {
+        console.log(
+          `Barcodes with regular characters could match this, and ${barcode} did.`,
+        )
+      },
+      comment: 'Catches regular characters',
+    }
+
+    registrations.advancedRegex = {
+      regex: /\w+[_\w+]+/,
+      context: document.querySelector('header'),
+      callback: function(barcode) {
+        console.log(
+          `Barcodes with regular characters in a pattern will match this, and ${barcode} did.`,
+        )
+      },
+      comment: 'Catches regular characters with an underscore pattern',
     }
   })
 
   afterEach(() => {
+    collectionManagement.reset()
     // destroy every spy
     jest.restoreAllMocks()
   })
@@ -36,47 +67,23 @@ describe('Good registration is handled well', function() {
     collectionManagement.registerHotkey(registrations.OK)
 
     expect(spyConsoleError).not.toHaveBeenCalled()
+  })
 
+  test(`An alternative registration, with a querySelector as context
+    and an omitted comment is sanity-checked and found OK`, () => {
     const spyConsoleError2 = jest.spyOn(console, 'error')
     collectionManagement.registerBarcode(registrations.OK2)
 
     expect(spyConsoleError2).not.toHaveBeenCalled()
   })
 
-  test('A registration with a faulty context is not OK', () => {
-    const spyConsoleError = jest.spyOn(console, 'error')
-    let faultyContext = Object.assign({}, registrations.OK, {
-      context: null,
-    })
-    collectionManagement.registerHotkey(faultyContext)
+  test(`An always-true regex in a barcode registration is used
+    when the regex member is omitted`, () => {
+    let noRegexProps = Object.assign({}, registrations.OK2)
+    delete noRegexProps.regex
+    collectionManagement.registerBarcode(noRegexProps)
 
-    expect(spyConsoleError).toHaveBeenCalled()
-
-    const spyConsoleError2 = jest.spyOn(console, 'error')
-    let faultyContext2 = Object.assign({}, registrations.OK2, {
-      context: null,
-    })
-    collectionManagement.registerBarcode(faultyContext2)
-
-    expect(spyConsoleError2).toHaveBeenCalled()
-  })
-
-  test('A registration with a faulty callback is not OK', () => {
-    const spyConsoleError = jest.spyOn(console, 'error')
-    let faultyCallback = Object.assign({}, registrations.OK, {
-      callback: null,
-    })
-    collectionManagement.registerHotkey(faultyCallback)
-
-    expect(spyConsoleError).toHaveBeenCalled()
-
-    const spyConsoleError2 = jest.spyOn(console, 'error')
-    let faultyCallback2 = Object.assign({}, registrations.OK2, {
-      callback: null,
-    })
-    collectionManagement.registerBarcode(faultyCallback2)
-
-    expect(spyConsoleError2).toHaveBeenCalled()
+    expect(noRegexProps.regex instanceof RegExp).toBe(true)
   })
 
   test('A registered callback is returned by entryHandler', () => {

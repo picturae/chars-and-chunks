@@ -60,6 +60,10 @@ To get an overview of effective keys and barcodes, completed with a comment:
 
     charsAndChunks.overview()
 
+To reset and start all over again:
+
+    charsAndChunks.reset()
+
 ## Disclaimer
 
 Chars and Chunks does not attempt to avoid clashes with accesskeys. When you

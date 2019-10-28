@@ -69,6 +69,7 @@ const charsAndChunksModule = (function() {
       hotkey: collectionManagement.registerHotkey,
       barcode: collectionManagement.registerBarcode,
       overview: collectionManagement.overview,
+      reset: collectionManagement.reset,
     },
     testAPI: {
       hotkeyHandler: collectionManagement.hotkeyHandler,
