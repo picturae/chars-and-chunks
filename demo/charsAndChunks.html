@@ -160,6 +160,41 @@
 
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
     charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode })
+
+    function focusPrevButton () {
+      const buttons = document.getElementsByTagName('button')
+      let prev = buttons.length - 1
+      for (let index = 0; index < buttons.length; index++) {
+        if (buttons[index] === document.activeElement) {
+          prev = index - 1
+        }
+      }
+      if (prev < 0) prev = buttons.length - 1
+      buttons[prev].focus()
+    }
+    charsAndChunks.hotkey ({ char: 'ArrowLeft', context: 'body', callback: focusPrevButton, comment: 'Focus on previous button'})
+
+    function focusNextButton () {
+      const buttons = document.querySelectorAll('button')
+      const focussed = document.querySelector('*:focus')
+      let next = 0
+      for (let index = 0; index < buttons.length; index++) {
+        if (buttons[index] === focussed) {
+          next = index + 1
+        }
+      }
+      if (next >= buttons.length) next = 0
+      buttons[next].focus()
+    }
+    charsAndChunks.hotkey ({ char: 'ArrowRight', context: 'body', callback: focusNextButton, comment: 'Focus on next button'})
+
+    function focusTheBody () {
+      window.focus()
+      if (document.activeElement) {
+          document.activeElement.blur()
+      }
+    }
+    charsAndChunks.hotkey ({ char: 'Backspace', context: 'body', callback: focusTheBody, comment: 'Focus on the body'})
     </script>
   </body>
 </html>

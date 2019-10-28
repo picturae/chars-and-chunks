@@ -107,15 +107,14 @@ describe("It's all around a keyboard event", function() {
     expect(spyBarcode).toHaveBeenCalledWith('BBBBBBBB')
   })
 
-  test('A Backspace will erase the sequence', () => {
+  test('A Backspace will be seen as a character', () => {
     const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
     const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
     dispatchEightTimesCapitalB()
     window.dispatchEvent(keyStrokes.Backspace)
-    window.dispatchEvent(keyStrokes.Enter)
     jest.runAllTimers()
 
-    expect(spyHotkey).not.toHaveBeenCalled()
+    expect(spyHotkey).toHaveBeenCalledWith('Backspace')
     expect(spyBarcode).not.toHaveBeenCalled()
   })
 

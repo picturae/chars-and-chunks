@@ -5,29 +5,29 @@ const charsAndChunksModule = (function() {
   let safeIntermission = 30
   // General treshold to prevent accidental elbow-on-keyboard processing
   let minimalBarcodeLength = 6
-  const allowedModifiers = ['Alt', 'Shift']
+  const allowedModifiers = ['Alt', 'Control', 'Shift']
   // Process variables
   let streamTimeout = 0
-  let stream = ''
+  let stream = []
 
   const settleStream = function() {
     // We only deal with single characters or barcodes.
     if (stream.length >= minimalBarcodeLength) {
-      //console.log(`handle as barcode: ${stream} (${stream.length})`)
-      let handle = collectionManagement.barcodeHandler(stream)
+      //console.log(`handle as barcode: ${stream.join('')} (${stream.length})`)
+      let handle = collectionManagement.barcodeHandler(stream.join(''))
       if (handle) {
         handle.callback(stream)
       }
     } else if (stream.length === 1) {
-      //console.log(`handle as character: ${stream} (${stream.length})`)
-      let handle = collectionManagement.hotkeyHandler(stream)
+      //console.log(`handle as character: ${stream.join('')} (${stream.length})`)
+      let handle = collectionManagement.hotkeyHandler(stream.join(''))
       if (handle) {
         handle.callback(stream)
       }
     } else {
-      //console.log(`invalid stream length: ${stream.length} (${stream})`)
+      //console.log(`invalid stream length: ${stream.length} (${stream.join('')})`)
     }
-    stream = ''
+    stream = []
   }
 
   const streamHandler = function(event) {
@@ -36,27 +36,34 @@ const charsAndChunksModule = (function() {
       clearTimeout(streamTimeout)
     }
 
-    // We expect our barcode scanner to send character by character.
-    let charByChar = event.key.length === 1
     // We expect our input can safely be processed; we leave entry with on-the-fly editing to form controls
-    let fromFormControl =
-      event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA'
-    let notOurScope = !charByChar || fromFormControl
+    const fromFormControl =
+      event.target.tagName === 'INPUT' ||
+      event.target.tagName === 'TEXTAREA' ||
+      event.target.tagName === 'SELECT'
+    if (fromFormControl) {
+      stream = []
+      return
+    }
 
-    if (notOurScope) {
+    // We expect our barcode scanner to send character by character.
+    const multiChar = event.key.length > 1
+    if (multiChar) {
+      // Do not wait for new characters
       //console.log(`out of scope: '${event.key}' in stream: '${stream}'`)
       if (event.key === 'Enter') {
-        // Do not wait for new characters
         settleStream()
         return
       } else if (!allowedModifiers.includes(event.key)) {
-        clearTimeout(streamTimeout)
-        stream = ''
+        // pageDown, Tab, Backspace, etc.
+        // Do not use previous characters also
+        stream = [event.key]
+        settleStream()
         return
       }
       // With allowedModifiers we want to set a new timeout
     } else {
-      stream += event.key
+      stream.push(event.key)
     }
 
     streamTimeout = setTimeout(settleStream, safeIntermission)

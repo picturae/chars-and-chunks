@@ -30,7 +30,7 @@ const collectionManagement = (function() {
   const registrationSanity = function(props) {
     const matchOK = (function() {
       if (props.char) {
-        return typeof props.char === 'string' && props.char.length === 1
+        return typeof props.char === 'string'
       } else if (props.regex) {
         return props.regex instanceof RegExp
       }
