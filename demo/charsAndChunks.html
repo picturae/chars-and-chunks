@@ -195,6 +195,12 @@
       }
     }
     charsAndChunks.hotkey ({ char: 'Backspace', context: 'body', callback: focusTheBody, comment: 'Focus on the body'})
+
+    function focusTheInput () {
+      document.querySelector('input').focus()
+    }
+    charsAndChunks.hotkey ({ char: 'ctrl+i', context: 'main', callback: focusTheInput, comment: 'Focus on the input'})
+
     </script>
   </body>
 </html>

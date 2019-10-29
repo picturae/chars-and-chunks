@@ -27,12 +27,13 @@ describe("It's all around a keyboard event", function() {
       which: 66,
     })
 
-    keyStrokes.Shift = new KeyboardEvent('keydown', {
+    keyStrokes['ctrl+i'] = new KeyboardEvent('keydown', {
       charCode: 0,
-      code: 'ShiftLeft',
-      key: 'Shift',
-      keyCode: 16,
-      which: 16,
+      code: 'KeyI',
+      key: 'i',
+      keyCode: 73,
+      ctrlKey: true,
+      which: 73,
     })
 
     keyStrokes.Backspace = new KeyboardEvent('keydown', {
@@ -53,7 +54,6 @@ describe("It's all around a keyboard event", function() {
 
     dispatchEightTimesCapitalB = function() {
       for (let i = 0; i < 8; i++) {
-        window.dispatchEvent(keyStrokes.Shift)
         window.dispatchEvent(keyStrokes.B)
       }
     }
@@ -76,6 +76,16 @@ describe("It's all around a keyboard event", function() {
     expect(spyBarcode).not.toHaveBeenCalled()
   })
 
+  test('A Control modified single character is sent to the hotkeyHandler with a prefix', () => {
+    const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
+    const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
+    window.dispatchEvent(keyStrokes['ctrl+i'])
+    jest.runAllTimers()
+
+    expect(spyHotkey).toHaveBeenCalledWith('ctrl+i')
+    expect(spyBarcode).not.toHaveBeenCalled()
+  })
+
   test('A sequence is sent to the barcodeHandler', () => {
     const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
     const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
@@ -90,7 +100,6 @@ describe("It's all around a keyboard event", function() {
     const spyHotkey = jest.spyOn(collectionManagement, 'hotkeyHandler')
     const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
     window.dispatchEvent(keyStrokes.f)
-    window.dispatchEvent(keyStrokes.Shift)
     window.dispatchEvent(keyStrokes.B)
     jest.runAllTimers()
 

@@ -5,14 +5,15 @@ const charsAndChunksModule = (function() {
   let safeIntermission = 30
   // General treshold to prevent accidental elbow-on-keyboard processing
   let minimalBarcodeLength = 6
-  const allowedModifiers = ['Alt', 'Control', 'Shift']
+
+  const allowedModifiers = ['Shift']
   // Process variables
   let streamTimeout = 0
   let stream = []
 
-  const settleStream = function() {
+  const settleStream = function(event) {
     // We only deal with single characters or barcodes.
-    const settle = stream.join('')
+    let settle = stream.join('')
     if (stream.length >= minimalBarcodeLength) {
       //console.log(`handle as barcode: ${settle} (${stream.length})`)
       let handle = collectionManagement.barcodeHandler(settle)
@@ -21,6 +22,7 @@ const charsAndChunksModule = (function() {
       }
     } else if (stream.length === 1) {
       //console.log(`handle as character: ${settle} (${stream.length})`)
+      if (event.ctrlKey) settle = `ctrl+${settle}`
       let handle = collectionManagement.hotkeyHandler(settle)
       if (handle) {
         handle.callback(settle)
@@ -53,13 +55,13 @@ const charsAndChunksModule = (function() {
       // Do not wait for new characters
       //console.log(`out of scope: '${event.key}' in stream: '${stream}'`)
       if (event.key === 'Enter') {
-        settleStream()
+        settleStream(event)
         return
       } else if (!allowedModifiers.includes(event.key)) {
         // pageDown, Tab, Backspace, etc.
         // Do not use previous characters also
         stream = [event.key]
-        settleStream()
+        settleStream(event)
         return
       }
       // With allowedModifiers we want to set a new timeout
@@ -67,7 +69,7 @@ const charsAndChunksModule = (function() {
       stream.push(event.key)
     }
 
-    streamTimeout = setTimeout(settleStream, safeIntermission)
+    streamTimeout = setTimeout(settleStream, safeIntermission, event)
   }
 
   window.addEventListener('keydown', streamHandler)
