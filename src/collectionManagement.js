@@ -1,3 +1,5 @@
+import { dataLockBox } from './dataLockBox'
+
 const collectionManagement = (function() {
   /**
    * Map of contexts holding an object with a single charcter, a callback and optionally a comment
