@@ -1,8 +1,10 @@
+import { dataLockBox } from '../src/dataLockBox'
 import { collectionManagement } from '../src/collectionManagement'
 import { charsAndChunks } from '../src/charsAndChunks' //required. duh
 
 describe("It's all around a keyboard event", function() {
-  typeof charsAndChunks // have eslint to shut up
+  typeof dataLockBox // have eslint to shut up about no-unused-vars
+  typeof charsAndChunks // have eslint to shut up about no-unused-vars
   let keyStrokes = {}
   let dispatchEightTimesCapitalB
 
