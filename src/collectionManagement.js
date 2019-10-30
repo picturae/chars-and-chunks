@@ -49,7 +49,7 @@ const collectionManagement = (function() {
     const OK = matchOK && contextOK && callbackOK
     if (!OK) {
       console.error('Wrong properties for registering hotkeys or barcodes!')
-      //console.log(props)
+      if (location.hostname === "localhost") console.log(props)
     }
     return OK
   }
