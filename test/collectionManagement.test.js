@@ -1,6 +1,8 @@
+import { dataLockBox } from '../src/dataLockBox'
 import { collectionManagement } from '../src/collectionManagement'
 
 describe('Good registration is handled well', function() {
+  typeof dataLockBox // have eslint to shut up about no-unused-vars
   let registrations = {}
 
   beforeEach(() => {
@@ -60,7 +62,7 @@ describe('Good registration is handled well', function() {
     jest.restoreAllMocks()
   })
 
-  /* Test event handling */
+  /* Test collection logic */
 
   test('A registration is sanity-checked and found OK', () => {
     const spyConsoleError = jest.spyOn(console, 'error')
@@ -75,6 +77,14 @@ describe('Good registration is handled well', function() {
     collectionManagement.registerBarcode(registrations.OK2)
 
     expect(spyConsoleError2).not.toHaveBeenCalled()
+  })
+
+  test(`A faulty registration will not be stored`, () => {
+    const spyConsoleStorage = jest.spyOn(dataLockBox, 'store')
+    registrations.OK2.callback = []
+    collectionManagement.registerBarcode(registrations.OK2)
+
+    expect(spyConsoleStorage).not.toHaveBeenCalled()
   })
 
   test(`An always-true regex in a barcode registration is used
@@ -111,10 +121,10 @@ describe('Good registration is handled well', function() {
       registrations.OK2.regex,
     )
 
-    expect(handle).toBeTruthy
-    expect(handle2).toBeTruthy
-    expect(handle_reset).toBeFalsy
-    expect(handle2_reset).toBeFalsy
+    expect(handle).toBeTruthy()
+    expect(handle2).toBeTruthy()
+    expect(handle_reset).toBeFalsy()
+    expect(handle2_reset).toBeFalsy()
   })
 
   test(`A barcode is paired to the lengthiest matching Regexp`, () => {

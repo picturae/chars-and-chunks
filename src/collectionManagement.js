@@ -1,22 +1,6 @@
+import { dataLockBox } from './dataLockBox'
+
 const collectionManagement = (function() {
-  /**
-   * Map of contexts holding an object with a single charcter, a callback and optionally a comment
-   */
-  let references
-  /**
-   * Map of characters and regular expressions holding a context.
-   */
-  let requests
-
-  /**
-   * Resuseable function for creating blank data objects
-   */
-  const createRunDataObjects = function() {
-    references = new WeakMap()
-    requests = new Map()
-  }
-  createRunDataObjects()
-
   /**
    * Default regular expression.
    */
@@ -56,26 +40,21 @@ const collectionManagement = (function() {
 
   /**
    * Register a context to trigger a function when any barcode is encountered
+   * @private
    * @param {object} props
-   *    @member {string} char (optional)
-   *    @member {RegExp} regex (optional)
+   *    @member {string} char (conditionally optional)
+   *    @member {RegExp} regex (conditionally optional)
    *    @member {object} context - Node
    *    @member {function} callback
    *    @member {string} comment (optional)
    */
   const registerEntry = function(props) {
-    const entry = props.char || props.regex
-
-    // Register context with regular expression in a Map
-    requests.set(entry, props.context)
-    if (!references.has(props.context)) {
-      references.set(props.context, {})
-    }
-    // Register data with context in a WeakMap
-    references.get(props.context)[entry] = {
+    props.entry = props.char || props.regex
+    props.box = {
       callback: props.callback,
       comment: props.comment,
     }
+    dataLockBox.store(props)
   }
 
   /**
@@ -94,7 +73,7 @@ const collectionManagement = (function() {
    * Check for the node being inside the DOM
    * @private
    * @param {Node} node
-   * @returns {boolean} boolean
+   * @returns {boolean} boolean - true when the node is onscreen -- not removed
    */
   const isAttached = function(elm) {
     return (
@@ -105,31 +84,12 @@ const collectionManagement = (function() {
   }
 
   /**
-   * Get valid data
-   * @private
-   * @param {Node} context
-   * @param {string | RegExp} entry
+   * Find the right data for hotkey
+   * @param {string} char
    * @returns {object} data object
    */
-  const getHandle = function(context, entry) {
-    if (isAttached(context) && references.has(context)) {
-      return references.get(context)[entry]
-    }
-    // should we garbage collect programatically?
-  }
-
-  /**
-   * Find the right data
-   * @private
-   * @param {string | RegExp} entry
-   * @returns {object} data object
-   */
-  const entryHandler = function(entry) {
-    //console.log(`entry to handle: ${entry}`)
-    if (requests.has(entry)) {
-      let requestedContext = requests.get(entry)
-      return getHandle(requestedContext, entry)
-    }
+  const hotkeyHandler = function(char) {
+    return dataLockBox.retrieve({ entry: char }, isAttached)
   }
 
   /**
@@ -148,79 +108,75 @@ const collectionManagement = (function() {
   }
 
   /**
-   * Find the right RegExp for barcode
+   * Find the lengthiest RegExp for barcode
    * @private
    * @param {string} barcode
    * @returns {RegExp}
    */
   const barcodeMatch = function(barcode) {
-    var regex = catchAllRegExp
+    let regex = catchAllRegExp
+    const keys = dataLockBox.keys()
 
-    requests.forEach((reqValue, reqKey) => {
-      if (reqKey instanceof RegExp && reqKey.test(barcode)) {
+    for (let key of keys) {
+      if (key instanceof RegExp && key.test(barcode)) {
         // find the most complex RegExp
-        if (reqKey.toString().length > regex.toString().length) {
-          regex = reqKey
+        if (key.toString().length > regex.toString().length) {
+          regex = key
         }
       }
-    })
+    }
     return regex
   }
 
   /**
-   * Find the right data
+   * Find the right data for barcode
    * @param {string} barcode
    * @returns {object} data object
    */
   const barcodeHandler = function(barcode) {
     const regex = barcodeMatch(barcode)
-    return entryHandler(regex)
+    return dataLockBox.retrieve({ entry: regex }, isAttached)
   }
 
   /**
-   * Generate a list of active hotkeys and barcode watchers, optionally with their purpose
+   * Generate a list of active entries (those with a valid context)
    * @returns {object}
    */
   const overview = function() {
-    //console.log('overview called')
-    let handles = { hotkey: [], barcode: [] }
+    let handles = []
+    const records = dataLockBox.overview(isAttached)
 
-    requests.forEach((context, entry) => {
-      if (typeof entry === 'string') {
-        let handle = getHandle(context, entry)
-        if (handle) {
-          let toEndUser = {
-            entry: entry,
-            comment: handle.comment,
-          }
-          handles.hotkey.push(toEndUser)
+    records.forEach(record => {
+      if (record.box && typeof record.entry === 'string') {
+        let toEndUser = {
+          entry: record.entry,
+          comment: record.box.comment,
         }
+        handles.hotkey = handles.hotkey
+          ? handles.hotkey.concat([toEndUser])
+          : [toEndUser]
+      }
+      if (record.box && record.entry instanceof RegExp) {
+        let toEndUser = {
+          entry: 'barcode', //record.entry.toString(),
+          comment: record.box.comment,
+        }
+        handles.barcode = handles.barcode
+          ? handles.barcode.concat([toEndUser])
+          : [toEndUser]
       }
     })
-
-    requests.forEach((context, entry) => {
-      if (entry instanceof RegExp) {
-        let handle = getHandle(context, entry)
-        if (handle) {
-          let toEndUser = {
-            entry: 'barcode', //entry.toString(),
-            comment: getHandle(context, entry).comment,
-          }
-          handles.barcode.push(toEndUser)
-        }
-      }
-    })
-    //console.log(handles)
+    //console.log('overview' + JSON.stringify(handles))
     return handles
   }
 
   return {
     registerHotkey: registerHotkey,
-    hotkeyHandler: entryHandler,
+    hotkeyHandler: hotkeyHandler,
     registerBarcode: registerBarcode,
     barcodeHandler: barcodeHandler,
     overview: overview,
-    reset: createRunDataObjects,
+    reset: dataLockBox.reset,
   }
 })()
 
