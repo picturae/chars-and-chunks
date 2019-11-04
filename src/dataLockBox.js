@@ -110,6 +110,7 @@ const dataLockBox = (function() {
   const overlay = function() {
     stash.push(Object.assign({}, data))
     reset()
+    //console.log(`go to stack level ${stash.length}`)
   }
 
   /*
@@ -117,6 +118,7 @@ const dataLockBox = (function() {
    */
   const revive = function() {
     if (stash.length) {
+      //console.log(`remove stack level ${stash.length}`)
       data = stash.pop()
     }
   }

@@ -149,4 +149,27 @@ describe('Good registration is handled well', function() {
 
     expect(spyCallbackAdv).toHaveBeenCalledWith(entryAdv)
   })
+
+  test('A empty overview object is returned when nothing was configured', () => {
+    const ovvObj = collectionManagement.overview()
+    const overviewJSON = JSON.stringify(ovvObj)
+
+    expect(typeof ovvObj).toBe('object')
+    expect(overviewJSON).toBe('{}')
+  })
+
+  test("An overview object with an array 'hotkey' is returned when some hotkeys were configured", () => {
+    collectionManagement.registerHotkey(registrations.OK)
+    const ovvObj = collectionManagement.overview()
+
+    expect(ovvObj.hotkey instanceof Array).toBe(true)
+  })
+
+  test("An overview object with an array 'hotkey' and an array 'barcode' is returned when some hotkeys and barcodes were configured", () => {
+    collectionManagement.registerHotkey(registrations.OK)
+    collectionManagement.registerBarcode(registrations.OK2)
+    const ovvObj = collectionManagement.overview()
+
+    expect(ovvObj.barcode instanceof Array).toBe(true)
+  })
 })

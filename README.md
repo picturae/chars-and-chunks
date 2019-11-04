@@ -1,7 +1,7 @@
 # Chars and Chunks
 
 Chars and Chunks catches single keystrokes and input from barcode scanners in
-such way these can used to set the flow of a webapp.
+such way these can used to help create the flow of a webapp.
 
 While keystrokes are mapped to a character, barcodes match a
 regular expression. When a keystroke or barcode is caught, its context (an
@@ -13,8 +13,8 @@ suppressed en replaced by a new set.
 
 Chars and Chunks offers a overview of effective keys and barcodes.
 
-Chars and Chunks will not interfere when the user types text in input fields
-or textareas.
+Chars and Chunks will not interfere when the user types text in input fields,
+textareas or selection lists.
 
 ## Install
 
@@ -41,6 +41,7 @@ To set up a hotkey an object with members char, context and callback is needed.
 
 To set up a barcode the same object can be used, with member regex instead of char.
 * 'regex' is the regular expression your barcode needs to match.
+
 When regex is omitted, all barcodes are valid:
 
     let header = document.querySelector('header')

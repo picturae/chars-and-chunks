@@ -1,7 +1,7 @@
 {
   "name": "chars-and-chunks",
   "version": "1.2.0",
-  "description": "Detect, seperate and handle hotkeys and barcodes ",
+  "description": "Detect, seperate and handle hotkeys and barcodes",
   "main": "dist/charsAndChunks.js",
   "module": "module/charsAndChunks.js",
   "directories": {
@@ -10,10 +10,10 @@
   "scripts": {
     "prebuild": "clear-folder dist module && prettier './{src,test}/*.js' --write",
     "build": "rollup --config",
-    "dev": "npm run test && npm run build",
+    "once": "npm run test && npm run build",
     "pretest": "eslint {src,test}/*.js",
     "test": "jest",
-    "watch": "onchange --initial \"{src,test}/*.js\" -- npm run dev --silent"
+    "watch": "onchange --initial \"{src,test}/*.js\" -- npm run once --silent"
   },
   "keywords": [
     "detect",

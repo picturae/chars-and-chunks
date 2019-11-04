@@ -33,7 +33,7 @@ const collectionManagement = (function() {
     const OK = matchOK && contextOK && callbackOK
     if (!OK) {
       console.error('Wrong properties for registering hotkeys or barcodes!')
-      if (location.hostname === "localhost") console.log(props)
+      if (location.port) console.log(props)
     }
     return OK
   }
@@ -142,9 +142,8 @@ const collectionManagement = (function() {
    * Generate a list of active entries (those with a valid context)
    * @returns {object}
    */
-  const overview = function() {
-    let handles = []
-    const records = dataLockBox.overview(isAttached)
+  const overview = function(records) {
+    let handles = {}
 
     records.forEach(record => {
       if (record.box && typeof record.entry === 'string') {
@@ -166,7 +165,7 @@ const collectionManagement = (function() {
           : [toEndUser]
       }
     })
-    //console.log('overview' + JSON.stringify(handles))
+    //console.log('overview:\n' + JSON.stringify(handles))
     return handles
   }
 
@@ -175,7 +174,9 @@ const collectionManagement = (function() {
     hotkeyHandler: hotkeyHandler,
     registerBarcode: registerBarcode,
     barcodeHandler: barcodeHandler,
-    overview: overview,
+    overview: function() {
+      return overview(dataLockBox.overview(isAttached))
+    },
     reset: dataLockBox.reset,
     overlay: dataLockBox.overlay,
     revive: dataLockBox.revive,
