@@ -177,6 +177,8 @@ const collectionManagement = (function() {
     barcodeHandler: barcodeHandler,
     overview: overview,
     reset: dataLockBox.reset,
+    overlay: dataLockBox.overlay,
+    revive: dataLockBox.revive,
   }
 })()
 

@@ -11,6 +11,8 @@ const dataLockBox = (function() {
 
   let data = new LockBoxModel()
 
+  let stash = []
+
   /**
    * Snaity check for storage
    * @private
@@ -102,6 +104,23 @@ const dataLockBox = (function() {
     data = new LockBoxModel()
   }
 
+  /*
+   * Disable all current data en put up a clean storage
+   */
+  const overlay = function() {
+    stash.push(Object.assign({}, data))
+    reset()
+  }
+
+  /*
+   * Remove the superseded data and enable the previous data
+   */
+  const revive = function() {
+    if (stash.length) {
+      data = stash.pop()
+    }
+  }
+
   return {
     store: store,
     retrieve: retrieve,
@@ -110,6 +129,8 @@ const dataLockBox = (function() {
     },
     overview: overview,
     reset: reset,
+    overlay: overlay,
+    revive: revive,
   }
 })()
 

@@ -8,6 +8,9 @@ regular expression. When a keystroke or barcode is caught, its context (an
 element in the document) is matched. When the context is inside the document tree,
 the callback function is called with the keystroke or barcode as an argument.
 
+When an overlay is shown the set of hotkeys and barcodes can temporarily be
+suppressed en replaced by a new set.
+
 Chars and Chunks offers a overview of effective keys and barcodes.
 
 Chars and Chunks will not interfere when the user types text in input fields
@@ -50,11 +53,20 @@ When regex is omitted, all barcodes are valid:
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
     charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: 'footer', callback: logHyphenSeperatedBarcode })
 
+With an overlay, the existing listeners can be suppressed en new ones can be set:
+
+    charsAndChunks.overlay()
+    charsAndChunks.hotkey (....
+
+When the overlay is closed, the temporary situation is abandoned:
+
+    charsAndChunks.revive()
+
 To get an overview of effective keys and barcodes, completed with a comment:
 
     charsAndChunks.overview()
 
-To reset and start all over again:
+To reset the current set of hotkeys and barcodes:
 
     charsAndChunks.reset()
 

@@ -107,4 +107,19 @@ describe('Context dependemt storage is volatile by design', function() {
 
     expect(records.length).toBe(2)
   })
+
+  test('A new page of interaction can be created and discarded', () => {
+    dataLockBox.store(dataItems.Home)
+    dataLockBox.store(dataItems.Regex)
+    const overview0 = dataLockBox.overview()
+    dataLockBox.overlay()
+    dataLockBox.store(dataItems.F)
+    const overviewOverlay = dataLockBox.overview()
+    dataLockBox.revive()
+    const overviewWithdraw = dataLockBox.overview()
+
+    expect(overview0.length).toBe(2)
+    expect(overviewOverlay.length).toBe(1)
+    expect(overviewWithdraw).toEqual(overview0)
+  })
 })
