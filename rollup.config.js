@@ -1,6 +1,7 @@
 // rollup.config.js
 import commonjs from 'rollup-plugin-commonjs'
 import { terser } from 'rollup-plugin-terser'
+import sass from 'rollup-plugin-sass'
 
 const name = 'charsAndChunks'
 
@@ -21,6 +22,9 @@ export default {
     },
   ],
   plugins: [
+    sass({
+      output: true,
+    }),
     commonjs({
       // to read umd dependencies
       include: 'node_modules/**',

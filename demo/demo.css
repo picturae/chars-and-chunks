@@ -1,0 +1,90 @@
+
+
+:root {
+  --flash-jerk: mediumvioletred;
+  --flash-help: lightgray;
+  --boring-jerk: lightgray;
+  --boring-help: black;
+  --legal-jerk: darkslategray;
+  --legal-help: lightgray;
+  --header-height: 6em;
+  --footer-height: 4em;
+  --opaque-lightgray: rgba(211,211,211,.92);
+  --opaque-black: rgba(0,0,0,.92);
+}
+html, body {
+  height: 100%;
+}
+body {
+  background: var(--boring-jerk);
+  color: var(--boring-help);
+  font: 15px/1.25 sans-serif;
+  margin: 0;
+}
+header {
+  background: var(--flash-jerk);
+  color: var(--flash-help);
+  height: var(--header-height);
+}
+header h1 {
+  margin: 0;
+}
+customfooter {
+  display: block;
+  background: var(--legal-jerk);
+  color: var(--legal-help);
+  height: var(--footer-height);
+}
+main {
+  height: calc(100% - var(--header-height) - var(--footer-height));
+  min-height: var(--header-height);
+  overflow-y: auto;
+}
+header, main, customfooter {
+  box-sizing: border-box;
+  padding: 1em 12.5em 1em 1em;
+  position: relative;
+}
+p {
+  margin: .25em 0;
+}
+button, input, select, textarea {
+  font: inherit;
+}
+button {
+  position: absolute;
+  right: 1em;
+}
+button:nth-child(2) {
+  top: 3em;
+}
+button:nth-child(3) {
+  top: 5em;
+}
+table {
+  padding: 1em;
+  background: var(--opaque-lightgray);
+  color: var(--opaque-black);
+  border: 1px solid var(--opaque-black);
+  overflow: auto;
+}
+td, th {
+  padding: .5rem;
+  text-align: left;
+  vertical-align: top;
+}
+thead {
+  font-size: 1.667em;
+}
+
+
+
+chars-and-chuncks-panel {
+  background: #fffc;
+}
+chars-and-chuncks-panel svg circle {
+  opacity: .5;
+}
+chars-and-chuncks-panel svg:hover circle {
+  opacity: 1;
+}

@@ -89,7 +89,11 @@ const collectionManagement = (function() {
    * @returns {object} data object
    */
   const hotkeyHandler = function(char) {
-    return dataLockBox.retrieve({ entry: char }, isAttached)
+    if (char === '?') {
+      appendOverviewHtml()
+    } else {
+      return dataLockBox.retrieve({ entry: char }, isAttached)
+    }
   }
 
   /**
@@ -142,8 +146,9 @@ const collectionManagement = (function() {
    * Generate a list of active entries (those with a valid context)
    * @returns {object}
    */
-  const overview = function(records) {
+  const overview = function() {
     let handles = {}
+    const records = dataLockBox.overview(isAttached)
 
     records.forEach(record => {
       if (record.box && typeof record.entry === 'string') {
@@ -151,8 +156,8 @@ const collectionManagement = (function() {
           entry: record.entry,
           comment: record.box.comment,
         }
-        handles.hotkey = handles.hotkey
-          ? handles.hotkey.concat([toEndUser])
+        handles.hotkeys = handles.hotkeys
+          ? handles.hotkeys.concat([toEndUser])
           : [toEndUser]
       }
       if (record.box && record.entry instanceof RegExp) {
@@ -160,8 +165,8 @@ const collectionManagement = (function() {
           entry: 'barcode', //record.entry.toString(),
           comment: record.box.comment,
         }
-        handles.barcode = handles.barcode
-          ? handles.barcode.concat([toEndUser])
+        handles.barcodes = handles.barcodes
+          ? handles.barcodes.concat([toEndUser])
           : [toEndUser]
       }
     })
@@ -169,17 +174,62 @@ const collectionManagement = (function() {
     return handles
   }
 
+  /**
+   * Coerce a screen in the html
+   */
+  const appendOverviewHtml = function() {
+    const handles = overview()
+
+    // build
+    let svgString = `
+    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+    	 viewBox="0 0 507.2 507.2" style="enable-background:new 0 0 507.2 507.2;" xml:space="preserve">
+    <circle fill="#000000" cx="253.6" cy="253.6" r="253.6"/>
+    <path fill="#FFFFFF" d="M373.6,309.6c11.2,11.2,11.2,30.4,0,41.6l-22.4,22.4c-11.2,11.2-30.4,11.2-41.6,0l-176-176
+    	c-11.2-11.2-11.2-30.4,0-41.6l23.2-23.2c11.2-11.2,30.4-11.2,41.6,0L373.6,309.6z"/>
+    <path fill="#FFFFFF" d="M309.6,133.6c11.2-11.2,30.4-11.2,41.6,0l23.2,23.2c11.2,11.2,11.2,30.4,0,41.6L197.6,373.6
+    	c-11.2,11.2-30.4,11.2-41.6,0l-22.4-22.4c-11.2-11.2-11.2-30.4,0-41.6L309.6,133.6z"/>
+    </svg>
+    `
+    let htmlString = `<table>`
+    const writeEntries = function(prop) {
+      let str = `<thead><th colspan="2">${prop}</th></thead><tbody>`
+      for (let item of handles[prop]) {
+        str += `<tr><th>${item.entry}</th><td>${item.comment}</td></tr>`
+      }
+      return str + `</tbody>`
+    }
+    if (handles.hotkeys) {
+      htmlString += writeEntries('hotkeys')
+    }
+    if (handles.barcodes) {
+      htmlString += writeEntries('barcodes')
+    }
+
+    htmlString += `</table>`
+    let panel = document.createElement('chars-and-chuncks-panel')
+    panel.innerHTML = svgString + htmlString
+
+    // apply
+    dataLockBox.overlay()
+    document.body.appendChild(panel)
+    let panelSVG = panel.querySelector('svg')
+    panelSVG.addEventListener('click', function() {
+      panel.remove()
+      dataLockBox.revive()
+    })
+  }
+
   return {
     registerHotkey: registerHotkey,
     hotkeyHandler: hotkeyHandler,
     registerBarcode: registerBarcode,
     barcodeHandler: barcodeHandler,
-    overview: function() {
-      return overview(dataLockBox.overview(isAttached))
-    },
+    overview: overview,
     reset: dataLockBox.reset,
     overlay: dataLockBox.overlay,
     revive: dataLockBox.revive,
+    appendOverviewHtml: appendOverviewHtml,
   }
 })()
 

@@ -82,6 +82,7 @@ const charsAndChunksModule = (function() {
       reset: collectionManagement.reset,
       overlay: collectionManagement.overlay,
       revive: collectionManagement.revive,
+      help: collectionManagement.appendOverviewHtml,
     },
     testAPI: {
       hotkeyHandler: collectionManagement.hotkeyHandler,

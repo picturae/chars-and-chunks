@@ -1,118 +1,10 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <style type="text/css">
-      :root {
-        --flash-jerk: mediumvioletred;
-        --flash-help: lightgray;
-        --boring-jerk: lightgray;
-        --boring-help: black;
-        --legal-jerk: darkslategray;
-        --legal-help: lightgray;
-        --header-height: 6em;
-        --footer-height: 4em;
-        --opaque-lightgray: rgba(211,211,211,.92);
-        --opaque-black: rgba(0,0,0,.92);
-      }
-      html, body {
-        height: 100%;
-      }
-      body {
-        background: var(--boring-jerk);
-        color: var(--boring-help);
-        font: 15px/1.25 sans-serif;
-        margin: 0;
-      }
-      header {
-        background: var(--flash-jerk);
-        color: var(--flash-help);
-        height: var(--header-height);
-      }
-      header h1 {
-        margin: 0;
-      }
-      customfooter {
-        display: block;
-        background: var(--legal-jerk);
-        color: var(--legal-help);
-        height: var(--footer-height);
-      }
-      main {
-        height: calc(100% - var(--header-height) - var(--footer-height));
-        min-height: var(--header-height);
-        overflow-y: auto;
-      }
-      header, main, customfooter {
-        box-sizing: border-box;
-        padding: 1em 12.5em 1em 1em;
-        position: relative;
-      }
-      p {
-        margin: .25em 0;
-      }
-      button, input, select, textarea {
-        font: inherit;
-      }
-      button {
-        position: absolute;
-        right: 1em;
-      }
-      button:nth-child(2) {
-        top: 3em;
-      }
-      button:nth-child(3) {
-        top: 5em;
-      }
-      table {
-        position: fixed;
-        left: 50%;  top: 50%;
-        transform: translate(-50%,-50%);
-        padding: 1em;
-        background: var(--opaque-lightgray);
-        color: var(--opaque-black);
-        border: 1px solid var(--opaque-black);
-        overflow: auto;
-      }
-      td, th {
-        padding: .5rem;
-        text-align: left;
-        vertical-align: top;
-      }
-      thead {
-        font-size: 1.667em;
-      }
-    </style>
+    <link type="text/css" href="../dist/charsAndChunks.css" rel="stylesheet" />
+    <link type="text/css" href="./demo.css" rel="stylesheet" />
 
     <script src="../dist/charsAndChunks.js"></script>
-    <script>
-    function showOverview (ctrl, ovvObj) {
-      ctrl.disabled = true
-      let htmlString = ``
-      for (let prop in ovvObj) {
-        htmlString += `<thead><th colspan="2">${prop}</th></thead><tbody>`
-        for (let item of ovvObj[prop]) {
-          htmlString += `<tr><th>${item.entry}</th><td>${item.comment}</td></tr>`
-        }
-        htmlString += `</tbody>`
-      }
-      let panel = document.createElement('table')
-      panel.innerHTML = htmlString;
-      document.body.appendChild(panel)
-      charsAndChunks.overlay()
-      function closeOverview () {
-        ctrl.disabled = false
-        this.remove()
-        charsAndChunks.revive()
-      }
-      panel.addEventListener('click', closeOverview)
-      charsAndChunks.hotkey({
-        char: 'x',
-        context: panel,
-        callback: closeOverview.bind(panel),
-        comment: 'Close panel'
-      })
-
-    }
-    </script>
   </head>
   <body>
     <header>
@@ -128,10 +20,10 @@
         onclick="document.querySelector('body > main').remove()"
       >remove main element</button>
       <button accesskey="o"
-        onclick="showOverview(this, charsAndChunks.overview())"
+        onclick="charsAndChunks.help()"
       >show overview</button>
       <p>The main element is the context for the 'm' hotkey and a all-digit barcode</p>
-      <p>There is an accesskey set on the "show overview" button - close the overview by keystroke 'x'</p>
+      <p>There is an accesskey set on the "show overview" button</p>
       <p>Navigate the buttons with ArrowLeft or ArrowRight</p>
       <input placeholder="try the input" type="text "/>
       <p>Focus the input with Ctrl+i keycombination</p>
@@ -148,28 +40,27 @@
 
     <script>
     let header = document.querySelector('header')
-    let main = document.querySelector('main')
     let customfooter = document.querySelector('customfooter')
 
     let logH = function () {console.log('h pressed')}
     charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH })
 
     let logM = () => {console.log('m pressed')}
-    charsAndChunks.hotkey ({ char: 'm', context: main, callback: logM, comment: 'Prints "m pressed" in the console' })
+    charsAndChunks.hotkey ({ char: 'm', context: 'main', callback: logM, comment: 'Prints "m pressed" in the console' })
 
     function logF () {console.log('f pressed')}
     charsAndChunks.hotkey ({ char: 'f', context: customfooter, callback: logF })
 
     function logAltCtrlO () {console.log('ø pressed')}
-    charsAndChunks.hotkey ({ char: 'ø', context: main, callback: logAltCtrlO, comment: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
+    charsAndChunks.hotkey ({ char: 'ø', context: 'main', callback: logAltCtrlO, comment: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
     function logAltShiftO () {console.log('Ø pressed')}
-    charsAndChunks.hotkey ({ char: 'Ø', context: main, callback: logAltShiftO, comment: 'same as accesskey "o" in chrome|ff/win' })
+    charsAndChunks.hotkey ({ char: 'Ø', context: 'main', callback: logAltShiftO, comment: 'same as accesskey "o" in chrome|ff/win' })
 
     let logAnyBarcode = function () {console.log('any barcode scanned')}
     charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
 
     logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
-    charsAndChunks.barcode ({ regex: /^\d+$/, context: main, callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
+    charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
 
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
     charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode })

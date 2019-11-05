@@ -1,0 +1,21 @@
+chars-and-chuncks-panel {
+  display: block;
+  padding: 1em;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999;
+  overflow: hidden;
+  overflow-y: auto;
+}
+chars-and-chuncks-panel table {
+  margin: 1em auto;
+}
+chars-and-chuncks-panel svg {
+  position: fixed;
+  right: 1em;
+  top: 1em;
+  width: 2em;
+}

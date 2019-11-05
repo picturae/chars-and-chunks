@@ -162,7 +162,7 @@ describe('Good registration is handled well', function() {
     collectionManagement.registerHotkey(registrations.OK)
     const ovvObj = collectionManagement.overview()
 
-    expect(ovvObj.hotkey instanceof Array).toBe(true)
+    expect(ovvObj.hotkeys instanceof Array).toBe(true)
   })
 
   test("An overview object with an array 'hotkey' and an array 'barcode' is returned when some hotkeys and barcodes were configured", () => {
@@ -170,6 +170,21 @@ describe('Good registration is handled well', function() {
     collectionManagement.registerBarcode(registrations.OK2)
     const ovvObj = collectionManagement.overview()
 
-    expect(ovvObj.barcode instanceof Array).toBe(true)
+    expect(ovvObj.barcodes instanceof Array).toBe(true)
+  })
+
+  test('An help-screen with all active entries is coerced to the hosting application', () => {
+    collectionManagement.registerHotkey(registrations.OK)
+    collectionManagement.registerBarcode(registrations.OK2)
+    collectionManagement.registerBarcode(registrations.omittedRegex)
+    collectionManagement.appendOverviewHtml()
+
+    const totalSelector = 'chars-and-chuncks-panel tbody tr'
+    const total = document.querySelectorAll(totalSelector)
+    const barcodesSelector = 'chars-and-chuncks-panel tbody:last-child tr'
+    const barcodes = document.querySelectorAll(barcodesSelector)
+
+    expect(total.length).toBe(3)
+    expect(barcodes.length).toBe(2)
   })
 })
