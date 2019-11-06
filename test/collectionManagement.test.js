@@ -14,7 +14,25 @@ describe('Good registration is handled well', function() {
       callback: function(character) {
         console.log(`We saw a '${character}'`)
       },
-      comment: 'Logs what was seen',
+      comment: 'Logs the character seen',
+    }
+
+    registrations.specialKey = {
+      char: 'Backspace',
+      context: document.querySelector('main'),
+      callback: function(character) {
+        console.log(`We saw a '${character}'`)
+      },
+      comment: 'Logs the special key seen',
+    }
+
+    registrations.array = {
+      char: ['+', '='],
+      context: document.querySelector('main'),
+      callback: function(character) {
+        console.log(`We saw member '${character}'`)
+      },
+      comment: 'Logs one of the members seen',
     }
 
     registrations.OK2 = {
@@ -71,6 +89,20 @@ describe('Good registration is handled well', function() {
     expect(spyConsoleError).not.toHaveBeenCalled()
   })
 
+  test('A registration with a special key is sanity-checked and found OK', () => {
+    const spyConsoleError = jest.spyOn(console, 'error')
+    collectionManagement.registerHotkey(registrations.specialKey)
+
+    expect(spyConsoleError).not.toHaveBeenCalled()
+  })
+
+  test('A registration with mukltip[le keys is sanity-checked and found OK', () => {
+    const spyConsoleError = jest.spyOn(console, 'error')
+    collectionManagement.registerHotkey(registrations.array)
+
+    expect(spyConsoleError).not.toHaveBeenCalled()
+  })
+
   test(`An alternative registration, with a querySelector as context
     and an omitted comment is sanity-checked and found OK`, () => {
     const spyConsoleError2 = jest.spyOn(console, 'error')
@@ -100,6 +132,26 @@ describe('Good registration is handled well', function() {
     const entry = 'f'
     const spyCallback = jest.spyOn(registrations.OK, 'callback')
     collectionManagement.registerHotkey(registrations.OK)
+    const handle = collectionManagement.hotkeyHandler(entry)
+    handle.callback(entry)
+
+    expect(spyCallback).toHaveBeenCalledWith(entry)
+  })
+
+  test('A with a multicharacter key registered callback is returned by entryHandler', () => {
+    const entry = 'Backspace'
+    const spyCallback = jest.spyOn(registrations.specialKey, 'callback')
+    collectionManagement.registerHotkey(registrations.specialKey)
+    const handle = collectionManagement.hotkeyHandler(entry)
+    handle.callback(entry)
+
+    expect(spyCallback).toHaveBeenCalledWith(entry)
+  })
+
+  test('A with multiple keys registered callback is returned by entryHandler', () => {
+    const entry = '='
+    const spyCallback = jest.spyOn(registrations.array, 'callback')
+    collectionManagement.registerHotkey(registrations.array)
     const handle = collectionManagement.hotkeyHandler(entry)
     handle.callback(entry)
 

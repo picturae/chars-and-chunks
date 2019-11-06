@@ -14,7 +14,7 @@ const collectionManagement = (function() {
   const registrationSanity = function(props) {
     const matchOK = (function() {
       if (props.char) {
-        return typeof props.char === 'string'
+        return typeof props.char === 'string' || props.char instanceof Array
       } else if (props.regex) {
         return props.regex instanceof RegExp
       }
@@ -89,10 +89,22 @@ const collectionManagement = (function() {
    * @returns {object} data object
    */
   const hotkeyHandler = function(char) {
+    //console.log('hotkeyHandler ' + char)
     if (char === '?') {
       appendOverviewHtml()
     } else {
-      return dataLockBox.retrieve({ entry: char }, isAttached)
+      let handle = dataLockBox.retrieve({ entry: char }, isAttached)
+      if (!handle) {
+        const records = dataLockBox.overview(isAttached)
+        records.some(record => {
+          if (record.entry instanceof Array && record.entry.includes(char)) {
+            handle = dataLockBox.retrieve({ entry: record.entry }, isAttached)
+            //console.log(`handle found: ${handle.comment}`)
+          }
+          return Boolean(handle)
+        })
+      }
+      return handle
     }
   }
 
@@ -151,9 +163,12 @@ const collectionManagement = (function() {
     const records = dataLockBox.overview(isAttached)
 
     records.forEach(record => {
-      if (record.box && typeof record.entry === 'string') {
+      if (
+        record.box &&
+        (typeof record.entry === 'string' || record.entry instanceof Array)
+      ) {
         let toEndUser = {
-          entry: record.entry,
+          entry: record.entry.toString().replace(/(.+),(.+)/g, '$1, $2'),
           comment: record.box.comment,
         }
         handles.hotkeys = handles.hotkeys

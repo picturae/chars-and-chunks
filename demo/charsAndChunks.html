@@ -49,7 +49,7 @@
     charsAndChunks.hotkey ({ char: 'm', context: 'main', callback: logM, comment: 'Prints "m pressed" in the console' })
 
     function logF () {console.log('f pressed')}
-    charsAndChunks.hotkey ({ char: 'f', context: customfooter, callback: logF })
+    charsAndChunks.hotkey ({ char: ['f', 'F'], context: customfooter, callback: logF })
 
     function logAltCtrlO () {console.log('ø pressed')}
     charsAndChunks.hotkey ({ char: 'ø', context: 'main', callback: logAltCtrlO, comment: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
