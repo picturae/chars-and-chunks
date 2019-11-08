@@ -203,7 +203,7 @@ describe('Good registration is handled well', function() {
   })
 
   test('A empty overview object is returned when nothing was configured', () => {
-    const ovvObj = collectionManagement.overview()
+    const ovvObj = collectionManagement.overviewJson()
     const overviewJSON = JSON.stringify(ovvObj)
 
     expect(typeof ovvObj).toBe('object')
@@ -212,7 +212,7 @@ describe('Good registration is handled well', function() {
 
   test("An overview object with an array 'hotkey' is returned when some hotkeys were configured", () => {
     collectionManagement.registerHotkey(registrations.OK)
-    const ovvObj = collectionManagement.overview()
+    const ovvObj = collectionManagement.overviewJson()
 
     expect(ovvObj.hotkeys instanceof Array).toBe(true)
   })
@@ -220,7 +220,7 @@ describe('Good registration is handled well', function() {
   test("An overview object with an array 'hotkey' and an array 'barcode' is returned when some hotkeys and barcodes were configured", () => {
     collectionManagement.registerHotkey(registrations.OK)
     collectionManagement.registerBarcode(registrations.OK2)
-    const ovvObj = collectionManagement.overview()
+    const ovvObj = collectionManagement.overviewJson()
 
     expect(ovvObj.barcodes instanceof Array).toBe(true)
   })
@@ -229,7 +229,7 @@ describe('Good registration is handled well', function() {
     collectionManagement.registerHotkey(registrations.OK)
     collectionManagement.registerBarcode(registrations.OK2)
     collectionManagement.registerBarcode(registrations.omittedRegex)
-    collectionManagement.appendOverviewHtml()
+    collectionManagement.overviewPanel()
 
     const totalSelector = 'chars-and-chuncks-panel tbody tr'
     const total = document.querySelectorAll(totalSelector)

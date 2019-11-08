@@ -78,11 +78,11 @@ const charsAndChunksModule = (function() {
     publicAPI: {
       hotkey: collectionManagement.registerHotkey,
       barcode: collectionManagement.registerBarcode,
-      overview: collectionManagement.overview,
+      overview: collectionManagement.overviewJson,
+      help: collectionManagement.overviewPanel,
       reset: collectionManagement.reset,
       overlay: collectionManagement.overlay,
       revive: collectionManagement.revive,
-      help: collectionManagement.appendOverviewHtml,
     },
     testAPI: {
       hotkeyHandler: collectionManagement.hotkeyHandler,

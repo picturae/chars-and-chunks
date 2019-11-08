@@ -91,7 +91,7 @@ const collectionManagement = (function() {
   const hotkeyHandler = function(char) {
     //console.log('hotkeyHandler ' + char)
     if (char === '?') {
-      appendOverviewHtml()
+      toggleOverviewPanel()
     } else {
       let handle = dataLockBox.retrieve({ entry: char }, isAttached)
       if (!handle) {
@@ -158,7 +158,7 @@ const collectionManagement = (function() {
    * Generate a list of active entries (those with a valid context)
    * @returns {object}
    */
-  const overview = function() {
+  const overviewJson = function() {
     let handles = {}
     const records = dataLockBox.overview(isAttached)
 
@@ -190,10 +190,18 @@ const collectionManagement = (function() {
   }
 
   /**
-   * Coerce a screen in the html
+   * Coerce a screen in the html - public toggle function
+   */
+  let toggleOverviewPanel = function() {
+    appendOverviewHtml()
+  }
+
+  /**
+   * Coerce a screen in the html - append function
+   * @private
    */
   const appendOverviewHtml = function() {
-    const handles = overview()
+    const handles = overviewJson()
 
     // build
     let svgString = `
@@ -208,8 +216,8 @@ const collectionManagement = (function() {
     `
     let htmlString = `<table>`
     const writeEntries = function(prop) {
-      let str = `<thead><th colspan="2">${prop}</th></thead><tbody>`
-      for (let item of handles[prop]) {
+      let str = `<thead><tr><th colspan="2">${prop}</th><tr></thead><tbody>`
+      for (let item of handles[prop] || []) {
         str += `<tr><th>${item.entry}</th><td>${item.comment}</td></tr>`
       }
       return str + `</tbody>`
@@ -220,6 +228,9 @@ const collectionManagement = (function() {
     if (handles.barcodes) {
       htmlString += writeEntries('barcodes')
     }
+    if (!handles.hotkeys && !handles.barcodes) {
+      htmlString += writeEntries('no hotkeys or barcodes configured')
+    }
 
     htmlString += `</table>`
     let panel = document.createElement('chars-and-chuncks-panel')
@@ -228,11 +239,37 @@ const collectionManagement = (function() {
     // apply
     dataLockBox.overlay()
     document.body.appendChild(panel)
-    let panelSVG = panel.querySelector('svg')
-    panelSVG.addEventListener('click', function() {
-      panel.remove()
-      dataLockBox.revive()
-    })
+    panel
+      .querySelector('table:first-of-type')
+      .addEventListener('click', removeOverviewHtml)
+    panel
+      .querySelector('svg:first-of-type')
+      .addEventListener('click', removeOverviewHtml)
+
+    // direct the toggle
+    toggleOverviewPanel = function() {
+      removeOverviewHtml()
+    }
+  }
+
+  /**
+   * Remove the open help-screen in the html
+   * @private
+   */
+  const removeOverviewHtml = function(event) {
+    const panel = document.querySelector('chars-and-chuncks-panel')
+    panel
+      .querySelector('table:first-of-type')
+      .removeEventListener('click', removeOverviewHtml)
+    panel
+      .querySelector('svg:first-of-type')
+      .removeEventListener('click', removeOverviewHtml)
+    panel.querySelector('svg').removeEventListener('click', removeOverviewHtml)
+    panel.remove()
+    dataLockBox.revive()
+    toggleOverviewPanel = function() {
+      appendOverviewHtml()
+    }
   }
 
   return {
@@ -240,11 +277,11 @@ const collectionManagement = (function() {
     hotkeyHandler: hotkeyHandler,
     registerBarcode: registerBarcode,
     barcodeHandler: barcodeHandler,
-    overview: overview,
+    overviewJson: overviewJson,
+    overviewPanel: toggleOverviewPanel,
     reset: dataLockBox.reset,
     overlay: dataLockBox.overlay,
     revive: dataLockBox.revive,
-    appendOverviewHtml: appendOverviewHtml,
   }
 })()
 
