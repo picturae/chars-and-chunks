@@ -39,6 +39,9 @@ To set up a hotkey an object with members char, context and callback is needed.
     function logF () {console.log('f pressed')}
     charsAndChunks.hotkey ({ char: 'Backspace', context: 'customfooter', callback: logF })
 
+    function logZoom () {console.log('zoom in')}
+    charsAndChunks.hotkey ({ char: ['+', '='], context: 'canvas', callback: logZoom })
+
 To set up a barcode the same object can be used, with member regex instead of char.
 * 'regex' is the regular expression your barcode needs to match.
 
@@ -63,7 +66,11 @@ When the overlay is closed, the temporary situation is abandoned:
 
     charsAndChunks.revive()
 
-To get an overview of effective keys and barcodes, completed with a comment:
+To get an onscreen overview of effective keys and barcodes press "?" key or:
+
+    charsAndChunks.help()
+
+To get a JSON with an overview of effective keys and barcodes:
 
     charsAndChunks.overview()
 
