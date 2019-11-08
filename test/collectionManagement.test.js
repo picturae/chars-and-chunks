@@ -239,4 +239,23 @@ describe('Good registration is handled well', function() {
     expect(total.length).toBe(3)
     expect(barcodes.length).toBe(2)
   })
+
+  test('A cleanup function is returned when a hotkey or barcode is registered', () => {
+    const cleanupOK = collectionManagement.registerHotkey(registrations.OK)
+
+    expect(typeof cleanupOK === 'function').toBe(true)
+  })
+
+  test(`A cleanup removes references to the context of a hotkey or barcode,
+      and therefore the hotkey or barcode can not be used anymore`, () => {
+    const clean = collectionManagement.registerHotkey(registrations.OK)
+    const handle1 = collectionManagement.hotkeyHandler(registrations.OK.char)
+
+    expect(registrations.OK.box).toBe(handle1)
+
+    clean()
+    const handle2 = collectionManagement.hotkeyHandler(registrations.OK.char)
+
+    expect(registrations.OK.box).not.toBe(handle2)
+  })
 })

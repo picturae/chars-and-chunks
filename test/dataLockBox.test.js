@@ -122,4 +122,19 @@ describe('Context dependemt storage is volatile by design', function() {
     expect(overviewOverlay.length).toBe(1)
     expect(overviewWithdraw).toEqual(overview0)
   })
+
+  test('Retrieve returns the box value of the entry', () => {
+    dataLockBox.store(dataItems.Home)
+    const retrievedItem = dataLockBox.retrieve({ entry: 'Home' })
+
+    expect(dataItems.Home.box).toEqual(retrievedItem)
+  })
+
+  test('Cleanup invalidates any lock with that context as value', () => {
+    dataLockBox.store(dataItems.Regex) // in main
+    dataLockBox.cleanup(dataItems.Regex.context)
+    const retrievedItem = dataLockBox.retrieve({ entry: 'Regex' })
+
+    expect(retrievedItem).toEqual(undefined)
+  })
 })

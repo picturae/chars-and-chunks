@@ -71,8 +71,7 @@ const dataLockBox = (function() {
         if (contextValidator(context)) {
           return data.box.get(context)[props.entry]
         } else {
-          data.lock.set(props.entry, undefined)
-          data.box.delete(context)
+          cleanup(context)
         }
       }
     }
@@ -123,6 +122,20 @@ const dataLockBox = (function() {
     }
   }
 
+  /*
+   * Remove references to contexts
+   * @param {object} context
+   */
+  const cleanup = function(context) {
+    data.lock.forEach((entryVal, entry) => {
+      if (data.lock.get(entry) === context) {
+        //console.log(`cleanup '${data.box.get(context)[entry].comment}'`)
+        data.lock.set(entry, undefined)
+      }
+    })
+    data.box.delete(context)
+  }
+
   return {
     store: store,
     retrieve: retrieve,
@@ -133,6 +146,7 @@ const dataLockBox = (function() {
     reset: reset,
     overlay: overlay,
     revive: revive,
+    cleanup: cleanup,
   }
 })()
 

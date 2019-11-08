@@ -8,17 +8,13 @@
   </head>
   <body>
     <header>
-      <button
-        onclick="document.body.removeChild(document.querySelector('header'))"
-      >remove header</button>
+      <button id="removeHeader">remove header</button>
       <h1>Demo of keystroking and barcode scanning</h1>
       <p>The header is the context for the 'h' hotkey or any barcode</p>
     </header>
 
     <main>
-      <button
-        onclick="document.querySelector('body > main').remove()"
-      >remove main element</button>
+      <button id="removeMain">remove main element</button>
       <button accesskey="o"
         onclick="charsAndChunks.help()"
       >show overview</button>
@@ -32,38 +28,54 @@
     </main>
 
     <customfooter>
-      <button
-        onclick="document.body.removeChild(document.querySelector('customfooter'))"
-      >remove custom footer</button>
+      <button id="removeFooter">remove custom footer</button>
       <p>The custom footer is the context for the 'f' hotkey and a underscore seprated barcode</p>
     </customfooter>
 
     <script>
     let header = document.querySelector('header')
-    let customfooter = document.querySelector('customfooter')
 
     let logH = function () {console.log('h pressed')}
-    charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH })
+    var cleanHeaderHotkey = charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH })
+    let logAnyBarcode = function () {console.log('any barcode scanned')}
+    var cleanHeaderBarcode = charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
+
+    document.getElementById('removeHeader').addEventListener('click', function () {
+      cleanHeaderHotkey()
+      cleanHeaderBarcode()
+      header.remove()
+    })
+
 
     let logM = () => {console.log('m pressed')}
-    charsAndChunks.hotkey ({ char: 'm', context: 'main', callback: logM, comment: 'Prints "m pressed" in the console' })
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'm', context: 'main', callback: logM, comment: 'Prints "m pressed" in the console' })
+    function logAltCtrlO () {console.log('ø pressed')}
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'ø', context: 'main', callback: logAltCtrlO, comment: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
+    function logAltShiftO () {console.log('Ø pressed')}
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'Ø', context: 'main', callback: logAltShiftO, comment: 'same as accesskey "o" in chrome|ff/win' })
+    logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
+    var cleanMainBarcode = charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
+
+    document.getElementById('removeMain').addEventListener('click', function () {
+      document.querySelector('main').remove()
+      cleanMainHotkey()
+      cleanMainBarcode()
+    })
+
+
+    let customfooter = document.querySelector('customfooter')
 
     function logF () {console.log('f pressed')}
-    charsAndChunks.hotkey ({ char: ['f', 'F'], context: customfooter, callback: logF })
-
-    function logAltCtrlO () {console.log('ø pressed')}
-    charsAndChunks.hotkey ({ char: 'ø', context: 'main', callback: logAltCtrlO, comment: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
-    function logAltShiftO () {console.log('Ø pressed')}
-    charsAndChunks.hotkey ({ char: 'Ø', context: 'main', callback: logAltShiftO, comment: 'same as accesskey "o" in chrome|ff/win' })
-
-    let logAnyBarcode = function () {console.log('any barcode scanned')}
-    charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
-
-    logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
-    charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
-
+    var cleanFooterHotkey = charsAndChunks.hotkey ({ char: ['f', 'F'], context: customfooter, callback: logF })
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
-    charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode })
+    var cleanFooterBarcode = charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode })
+
+    document.getElementById('removeFooter').addEventListener('click', function () {
+      customfooter.remove()
+      cleanFooterHotkey()
+      cleanFooterBarcode()
+    })
+
 
     function focusPrevButton () {
       const buttons = document.getElementsByTagName('button')

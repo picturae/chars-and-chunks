@@ -23,7 +23,7 @@ const collectionManagement = (function() {
       if (typeof props.context === 'string') {
         props.context = document.querySelector(props.context)
       }
-      return props.context instanceof Node
+      return typeof props.context === 'object' //props.context instanceof Node
     })()
     const callbackOK = typeof props.callback === 'function'
     // check optional comment
@@ -67,6 +67,7 @@ const collectionManagement = (function() {
       registerEntry(props)
       //console.log(`hotkey registered: ${props.char}`)
     }
+    return props
   }
 
   /**
@@ -121,6 +122,7 @@ const collectionManagement = (function() {
       registerEntry(props)
       //console.log(`barcode registered: ${props.regex}`)
     }
+    return props
   }
 
   /**
@@ -264,7 +266,6 @@ const collectionManagement = (function() {
     panel
       .querySelector('svg:first-of-type')
       .removeEventListener('click', removeOverviewHtml)
-    panel.querySelector('svg').removeEventListener('click', removeOverviewHtml)
     panel.remove()
     dataLockBox.revive()
     toggleOverviewPanel = function() {
@@ -272,10 +273,28 @@ const collectionManagement = (function() {
     }
   }
 
+  /*
+   * Make object in context eligible for garbage collection
+   * @param {object} context
+   */
+  const cleanup = function(sanitisedProps) {
+    dataLockBox.cleanup(sanitisedProps.context)
+  }
+
   return {
-    registerHotkey: registerHotkey,
+    registerHotkey: function(props) {
+      const sanitisedProps = registerHotkey(props)
+      return function() {
+        cleanup(sanitisedProps)
+      }
+    },
     hotkeyHandler: hotkeyHandler,
-    registerBarcode: registerBarcode,
+    registerBarcode: function(props) {
+      const sanitisedProps = registerBarcode(props)
+      return function() {
+        cleanup(sanitisedProps)
+      }
+    },
     barcodeHandler: barcodeHandler,
     overviewJson: overviewJson,
     overviewPanel: toggleOverviewPanel,
