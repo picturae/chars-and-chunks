@@ -37,8 +37,7 @@
 
   <script type="text/javascript">
     const properties = [
-      'altKey', 'ctrlKey', 'metaKey', 'shiftKey',
-      'charCode', 'keyCode', 'keyIdentifier', 'which',
+      'modifiedKey', 'charCode', 'keyCode', 'keyIdentifier', 'which',
       'code', 'isComposing', 'key', 'location', 'repeat'
     ];
     const deprecated = ['charCode', 'keyCode', 'keyIdentifier', 'which'];
@@ -46,8 +45,15 @@
     function keyListener (event) {
       console.log('keyListener');
       console.log(event);
+      event.modifiedKey = [];
+      if (event.altKey) event.modifiedKey.push('alt');
+      if (event.ctrlKey) event.modifiedKey.push('ctrl');
+      if (event.metaKey) event.modifiedKey.push('meta');
+      if (event.shiftKey) event.modifiedKey.push('shift');
       function propertyValue (val) {
-        if (typeof val === 'boolean') {
+        if (val instanceof Array) {
+          return val.join(' ')
+        } else if (typeof val === 'boolean') {
           return val ? '&radic;' : '&nbsp;';
         } else {
           return String(val);
