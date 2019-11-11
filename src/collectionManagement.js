@@ -66,8 +66,17 @@ const collectionManagement = (function() {
     if (registrationSanity(props)) {
       registerEntry(props)
       //console.log(`hotkey registered: ${props.char}`)
+      return props
     }
-    return props
+  }
+
+  const registerHotkeys = function(propsList) {
+    let refsList = []
+    propsList.forEach(props => {
+      let refs = registerHotkey(props)
+      if (refs) refsList.push(refs)
+    })
+    return refsList
   }
 
   /**
@@ -107,8 +116,8 @@ const collectionManagement = (function() {
     if (registrationSanity(props)) {
       registerEntry(props)
       //console.log(`barcode registered: ${props.regex}`)
+      return props
     }
-    return props
   }
 
   /**
@@ -269,16 +278,24 @@ const collectionManagement = (function() {
 
   return {
     registerHotkey: function(props) {
-      const sanitisedProps = registerHotkey(props)
+      const saneProps = registerHotkey(props)
       return function() {
-        cleanup(sanitisedProps)
+        if (saneProps && saneProps.context) cleanup(saneProps)
+      }
+    },
+    registerHotkeys: function(propsList) {
+      const sanePropsList = registerHotkeys(propsList)
+      return function() {
+        sanePropsList.forEach(saneProps => {
+          if (saneProps && saneProps.context) cleanup(saneProps)
+        })
       }
     },
     hotkeyHandler: hotkeyHandler,
     registerBarcode: function(props) {
-      const sanitisedProps = registerBarcode(props)
+      const saneProps = registerBarcode(props)
       return function() {
-        cleanup(sanitisedProps)
+        if (saneProps && saneProps.context) cleanup(saneProps)
       }
     },
     barcodeHandler: barcodeHandler,

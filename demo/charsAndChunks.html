@@ -88,7 +88,6 @@
       if (prev < 0) prev = buttons.length - 1
       buttons[prev].focus()
     }
-    charsAndChunks.hotkey ({ char: 'ArrowLeft', context: 'body', callback: focusPrevButton, comment: 'Focus on previous button'})
 
     function focusNextButton () {
       const buttons = document.querySelectorAll('button')
@@ -102,7 +101,6 @@
       if (next >= buttons.length) next = 0
       buttons[next].focus()
     }
-    charsAndChunks.hotkey ({ char: 'ArrowRight', context: 'body', callback: focusNextButton, comment: 'Focus on next button'})
 
     function focusTheBody () {
       window.focus()
@@ -110,12 +108,17 @@
           document.activeElement.blur()
       }
     }
-    charsAndChunks.hotkey ({ char: 'Backspace', context: 'body', callback: focusTheBody, comment: 'Focus on the body'})
 
     function focusTheInput () {
       document.querySelector('input').focus()
     }
-    charsAndChunks.hotkey ({ char: 'ctrl+i', context: 'main', callback: focusTheInput, comment: 'Focus on the input'})
+
+    var cleanupMultiple = charsAndChunks.hotkeys ([
+      { char: 'ArrowLeft', context: 'body', callback: focusPrevButton, comment: 'Focus on previous button'},
+      { char: 'ArrowRight', context: 'body', callback: focusNextButton, comment: 'Focus on next button'},
+      { char: 'Backspace', context: 'body', callback: focusTheBody, comment: 'Focus on the body'},
+      { char: 'ctrl+i', context: 'main', callback: focusTheInput, comment: 'Focus on the input'},
+    ])
 
     </script>
   </body>

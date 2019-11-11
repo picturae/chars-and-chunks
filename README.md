@@ -4,8 +4,8 @@ Chars and Chunks catches single keystrokes and input from barcode scanners in
 such way these can used to help create the flow of a webapp.
 
 While keystrokes are mapped to a character, barcodes match a
-regular expression. When a keystroke or barcode is caught, its context (an
-element in the document) is matched. When the context is inside the document tree,
+regular expression. When a keystroke or barcode is caught,
+it's context is checked to be registered and when so,
 the callback function is called with the keystroke or barcode as an argument.
 
 When an overlay is shown the set of hotkeys and barcodes can temporarily be
@@ -41,6 +41,10 @@ To set up a hotkey an object with members char, context and callback is needed.
 
     function logZoom () {console.log('zoom in')}
     charsAndChunks.hotkey ({ char: ['+', '='], context: 'canvas', callback: logZoom })
+
+There is also bulk intake function for hotkeys, using an array of the same objects used for the hotkey function:
+
+    const cleanupHotkeyRefs = charsAndChunks.hotkeys ([{...},{...},{...},{...}])
 
 To set up a barcode the same object can be used, with member regex instead of char.
 * 'regex' is the regular expression your barcode needs to match.

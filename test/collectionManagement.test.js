@@ -248,14 +248,28 @@ describe('Good registration is handled well', function() {
 
   test(`A cleanup removes references to the context of a hotkey or barcode,
       and therefore the hotkey or barcode can not be used anymore`, () => {
-    const clean = collectionManagement.registerHotkey(registrations.OK)
+    const cleanup = collectionManagement.registerHotkey(registrations.OK)
     const handle1 = collectionManagement.hotkeyHandler(registrations.OK.char)
 
     expect(registrations.OK.box).toBe(handle1)
 
-    clean()
+    cleanup()
     const handle2 = collectionManagement.hotkeyHandler(registrations.OK.char)
 
     expect(registrations.OK.box).not.toBe(handle2)
+  })
+
+  test(`A array of hotkey-registrations can be done in one call,
+      and so the cleanup can also be done in one call`, () => {
+    const spyCleanup = jest.spyOn(dataLockBox, 'cleanup')
+
+    const cleanupRefs = collectionManagement.registerHotkeys([
+      registrations.OK,
+      registrations.specialKey,
+      registrations.array,
+    ])
+    cleanupRefs()
+
+    expect(spyCleanup).toHaveBeenCalledTimes(3)
   })
 })
