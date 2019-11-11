@@ -29,11 +29,11 @@ To set up a hotkey an object with members char, context and callback is needed.
 * 'callback' the function to execute
 * 'comment' a comment or description of the callback function, to be used in the overview
 
-    let header = document.querySelector('header')
-    let logH = function () {console.log('h pressed')}
+    const header = document.querySelector('header')
+    const logH = function () {console.log('h pressed')}
     charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH })
 
-    let logM = () => {console.log('ctrl+m pressed')}
+    const logM = () => {console.log('ctrl+m pressed')}
     charsAndChunks.hotkey ({ char: 'ctrl+m', context: 'main', callback: logM, comment: 'Prints "m pressed" in the console' })
 
     function logF () {console.log('f pressed')}
@@ -47,15 +47,25 @@ To set up a barcode the same object can be used, with member regex instead of ch
 
 When regex is omitted, all barcodes are valid:
 
-    let header = document.querySelector('header')
-    let logAnyBarcode = function () {console.log('any barcode scanned')}
-    charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
+    const header = document.querySelector('header')
+    const logAnyBarcode = function () {console.log('any barcode scanned')}
+    const cleanupHeaderRefs = charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
 
-    let logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
-    charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
+    const logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
+    const cleanupMainRefs = charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
 
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
-    charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: 'footer', callback: logHyphenSeperatedBarcode })
+    const cleanupFooterRefs = charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: 'footer', callback: logHyphenSeperatedBarcode })
+
+When the controller or the element is destroyed, the function returned when registering
+the hotkey or barcode needs to executed to unregister:
+
+    const cleanupHotkeyRefs = charsAndChunks.hotkey (...
+    const cleanupBarcodeRefs = charsAndChunks.barcode (...
+    controller.ondestroy = function () {}
+      cleanupHotkeyRefs()
+      cleanupBarcodeRefs()
+    }
 
 With an overlay, the existing listeners can be suppressed en new ones can be set:
 

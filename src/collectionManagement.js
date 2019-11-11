@@ -71,20 +71,6 @@ const collectionManagement = (function() {
   }
 
   /**
-   * Check for the node being inside the DOM
-   * @private
-   * @param {Node} node
-   * @returns {boolean} boolean - true when the node is onscreen -- not removed
-   */
-  const isAttached = function(elm) {
-    return (
-      elm &&
-      (elm.getRootNode() instanceof Document ||
-        elm.getRootNode() instanceof ShadowRoot)
-    )
-  }
-
-  /**
    * Find the right data for hotkey
    * @param {string} char
    * @returns {object} data object
@@ -94,12 +80,12 @@ const collectionManagement = (function() {
     if (char === '?') {
       toggleOverviewPanel()
     } else {
-      let handle = dataLockBox.retrieve({ entry: char }, isAttached)
+      let handle = dataLockBox.retrieve({ entry: char })
       if (!handle) {
-        const records = dataLockBox.overview(isAttached)
+        const records = dataLockBox.overview()
         records.some(record => {
           if (record.entry instanceof Array && record.entry.includes(char)) {
-            handle = dataLockBox.retrieve({ entry: record.entry }, isAttached)
+            handle = dataLockBox.retrieve({ entry: record.entry })
             //console.log(`handle found: ${handle.comment}`)
           }
           return Boolean(handle)
@@ -153,16 +139,16 @@ const collectionManagement = (function() {
    */
   const barcodeHandler = function(barcode) {
     const regex = barcodeMatch(barcode)
-    return dataLockBox.retrieve({ entry: regex }, isAttached)
+    return dataLockBox.retrieve({ entry: regex })
   }
 
   /**
-   * Generate a list of active entries (those with a valid context)
+   * Generate a list of active entries
    * @returns {object}
    */
   const overviewJson = function() {
     let handles = {}
-    const records = dataLockBox.overview(isAttached)
+    const records = dataLockBox.overview()
 
     records.forEach(record => {
       if (

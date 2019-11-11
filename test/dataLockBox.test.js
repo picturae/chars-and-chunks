@@ -3,10 +3,6 @@ import { dataLockBox } from '../src/dataLockBox'
 describe('Context dependemt storage is volatile by design', function() {
   let dataItems = {}
 
-  const nodeIsAttached = function(node) {
-    return node && node.getRootNode() instanceof Document
-  }
-
   beforeEach(() => {
     document.body.innerHTML = '<header></header><main></main><footer></footer>'
 
@@ -59,17 +55,6 @@ describe('Context dependemt storage is volatile by design', function() {
     expect(HomeItemHandle).toBe(dataItems.Home.box)
   })
 
-  test('Stored data can not be retrieved when the context is invalid', () => {
-    dataLockBox.store(dataItems.Home)
-    dataItems.Home.context.remove()
-    const HomeItemHandle = dataLockBox.retrieve(
-      { entry: dataItems.Home.entry },
-      nodeIsAttached,
-    )
-
-    expect(HomeItemHandle).toBe(undefined)
-  })
-
   test("Storing without 'entry' property creates a key with value undefined", () => {
     let noEntryData = dataItems.Home
     delete noEntryData.entry
@@ -102,8 +87,8 @@ describe('Context dependemt storage is volatile by design', function() {
     dataLockBox.store(dataItems.Regex)
     dataLockBox.store(dataItems.F)
 
-    dataItems.F.context.remove()
-    const records = dataLockBox.overview(nodeIsAttached)
+    dataLockBox.cleanup(dataItems.F.context)
+    const records = dataLockBox.overview()
 
     expect(records.length).toBe(2)
   })
@@ -131,7 +116,7 @@ describe('Context dependemt storage is volatile by design', function() {
   })
 
   test('Cleanup invalidates any lock with that context as value', () => {
-    dataLockBox.store(dataItems.Regex) // in main
+    dataLockBox.store(dataItems.Regex)
     dataLockBox.cleanup(dataItems.Regex.context)
     const retrievedItem = dataLockBox.retrieve({ entry: 'Regex' })
 
