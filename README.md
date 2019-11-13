@@ -98,3 +98,6 @@ Chars and Chunks does not attempt to avoid clashes with accesskeys. When you
 configure a keystroke for an accesskey to be a hotkey, both the accesskey and
 the hotkey are executed. Avoid clashes with accesskeys by not configuring
 keystrokes combined with an Alt-key or Option-key.
+
+Shift and Alt keys alone can not be used as hotkey,
+since these produce new characters that might be used in barcodes.

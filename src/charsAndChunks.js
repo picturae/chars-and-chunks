@@ -6,7 +6,7 @@ const charsAndChunksModule = (function() {
   // General treshold to prevent accidental elbow-on-keyboard processing
   let minimalBarcodeLength = 6
 
-  const allowedModifiers = ['Shift']
+  const allowedModifiers = ['Shift', 'Alt']
   // Process variables
   let streamTimeout = 0
   let stream = []
@@ -54,7 +54,7 @@ const charsAndChunksModule = (function() {
     if (multiChar) {
       // Do not wait for new characters
       //console.log(`out of scope: '${event.key}' in stream: '${stream}'`)
-      if (event.key === 'Enter') {
+      if (stream.length && event.key === 'Enter') {
         settleStream(event)
         return
       } else if (!allowedModifiers.includes(event.key)) {
@@ -66,6 +66,7 @@ const charsAndChunksModule = (function() {
       }
       // With allowedModifiers we want to set a new timeout
     } else {
+      // barcode characters pass here
       stream.push(event.key)
     }
 
