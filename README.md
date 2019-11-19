@@ -7,6 +7,9 @@ When a hotkey is pressed the function registered with it is executed.
 A barcode is matched against registered patterns and the code
 registered with the lengthiest pattern will be runned.
 
+Why? When you have seperate solutions for barcodes and for hotkeys,
+chances are big a barcodescan fires a hotkey.
+
 ## Install
 
 Install the package as npm package. Chars and Chunks is available in
