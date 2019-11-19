@@ -1,74 +1,103 @@
 # Chars and Chunks
 
-Chars and Chunks catches single keystrokes and input from barcode scanners in
-such way these can used to help create the flow of a webapp.
+Chars and Chunks helps to create the flow of a webapp by
+catching single keystrokes and input from barcode scanners.
 
-While keystrokes are mapped to a character, barcodes match a
-regular expression. When a keystroke or barcode is caught,
-it's context is checked to be registered and when so,
-the callback function is called with the keystroke or barcode as an argument.
-
-When an overlay is shown the set of hotkeys and barcodes can temporarily be
-suppressed en replaced by a new set.
-
-Chars and Chunks offers a overview of effective keys and barcodes.
-
-Chars and Chunks will not interfere when the user types text in input fields,
-textareas or selection lists.
+When a hotkey is pressed the function registered with it is executed.
+A barcode is matched against registered patterns and the code
+registered with the lengthiest pattern will be runned.
 
 ## Install
 
-Install the package as npm package. You can require the package or use it as
-a module.
+Install the package as npm package. Chars and Chunks is available in
+umd-format and as an es-module.
+
+## Features
+
+* There is one eventListener. It evaluates the key property of the keydown-event.
+* An array of hotkeys can be registered, returning one cancel function.
+* A barcode is evaluated when minimal 6 keystrokes are seen with an interval of
+30 milliseconds at most.
+* The hardcoded question mark hotkey shows and hides an overview the active
+hotkeys and barcodes.
+* The registrations can be layered. An overlay can be assigned a set of hotkeys
+while the set of hotkeys registered at the main flow are temporarily suppressed.
+These sets may overlap.
+* One callback-function can be assigned to multiple hotkeys in one registration.
+* A registration call returns a function cancelling the registration.
+* Chars and Chunks does not deal with entries made in input fields,
+textareas or selection lists.
 
 ## Usage
 
-To set up a hotkey an object with members char, context and callback is needed.
-* 'char' is the hotkey, could be modified with shift or control or keys like 'Backspace' or 'ArrowUp'
-* 'context' is an element or a querySelector for an element, i.e. the top element in a controlled view
-* 'callback' the function to execute
-* 'comment' a comment or description of the callback function, to be used in the overview
+To register keystrokes as hotkeys or patterns for barcodes similar objects are
+used. The properties are:
 
-    const header = document.querySelector('header')
-    const logH = function () {console.log('h pressed')}
-    charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH })
+* char | regex: distinguishing property for hotkeys or barcodes.
+* context: any object for the case you deal with. It could be an
+    object in the controller, or a html element, or anything that might be
+    invalid when the use case for the hotkey or barcode ended.
+* callback: the function to execute when keystroke passed or the
+pattern is matched.
+* comment: a comment or description of the callback function,
+    to be used in the overview
 
-    const logM = () => {console.log('ctrl+m pressed')}
-    charsAndChunks.hotkey ({ char: 'ctrl+m', context: 'main', callback: logM, comment: 'Prints "m pressed" in the console' })
+The entry property is different. As hotkey:
 
-    function logF () {console.log('f pressed')}
-    charsAndChunks.hotkey ({ char: 'Backspace', context: 'customfooter', callback: logF })
+* char: The keyboard key, may be modified (with  Alt, Control, Shift or Meta).
+    Since we use the key property of the keyboard event entries like
+    'Backspace' or 'ArrowUp' are allowed.
+    See https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 
-    function logZoom () {console.log('zoom in')}
-    charsAndChunks.hotkey ({ char: ['+', '='], context: 'canvas', callback: logZoom })
+For barcode:
 
-There is also bulk intake function for hotkeys, using an array of the same objects used for the hotkey function:
+* regex: The regular expression your barcode needs to match.
 
-    const cleanupHotkeyRefs = charsAndChunks.hotkeys ([{...},{...},{...},{...}])
+Examples:
 
-To set up a barcode the same object can be used, with member regex instead of char.
-* 'regex' is the regular expression your barcode needs to match.
+    const cleanupHotkey = charsAndChunks.hotkey ({
+        char: 'h',
+        context: document.querySelector('header'),
+        callback: function () {console.log('h pressed')},
+        comment: 'Prints "h pressed" in the console'
+    })
 
-When regex is omitted, all barcodes are valid:
+    const cleanupHotkey2 = charsAndChunks.hotkey ({
+        char: 'ctrl+m',
+        context: $scope,
+        callback: () => {console.log('ctrl+m pressed')},
+        comment: 'Prints "ctrl+m pressed" in the console'
+    })
 
-    const header = document.querySelector('header')
-    const logAnyBarcode = function () {console.log('any barcode scanned')}
-    const cleanupHeaderRefs = charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
+    const cleanupBarcode = charsAndChunks.barcode ({
+        regex: /^\w+-\w+$/,
+        context: 'form',
+        callback: () => {console.log('yphen seperated barcode scanned')},
+        comment: 'Prints "yphen seperated barcode scanned" in the console'
+    })
 
-    const logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
-    const cleanupMainRefs = charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
+The bulk intake function for hotkey:
 
-    function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
-    const cleanupFooterRefs = charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: 'footer', callback: logHyphenSeperatedBarcode })
+    const cleanupHotkeys = charsAndChunks.hotkey ({
+        char: 'Backspace',
+        context: this,
+        callback: function logF () {console.log('Backspace pressed')},
+        comment: 'Prints "Backspace pressed" in the console'
+    }, {
+        char: ['+', '='],
+        context: 'canvas',
+        callback: function logZoom () {console.log('zoom in')},
+        comment: 'Zoom in'
+    })
 
 When the controller or the element is destroyed, the function returned when registering
 the hotkey or barcode needs to executed to unregister:
 
-    const cleanupHotkeyRefs = charsAndChunks.hotkey (...
-    const cleanupBarcodeRefs = charsAndChunks.barcode (...
-    controller.ondestroy = function () {}
-      cleanupHotkeyRefs()
-      cleanupBarcodeRefs()
+    const cleanupHotkey = charsAndChunks.hotkey (...
+    const cleanupBarcode = charsAndChunks.barcode (...
+    controller.ondestroy = function () {
+      cleanupHotkey()
+      cleanupBarcode()
     }
 
 With an overlay, the existing listeners can be suppressed en new ones can be set:

@@ -12,3 +12,6 @@ roadmap 1.5.0
 * always active hotkeys, like ? for help en Escape for closing modals.
     make a persistent table and merge it in any new layer.
     we might also need to be more hotkey/barcode agnostic for the api.
+* rename comment to description being required
+* automatic cleanup on hmtl elements
+* no regex omission.
