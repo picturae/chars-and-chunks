@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/ovanderzee/chars-and-chunks.svg?branch=master)](https://travis-ci.com/ovanderzee/chars-and-chunks)
+
 # Chars and Chunks
 
 Chars and Chunks helps to create the flow of a webapp by
