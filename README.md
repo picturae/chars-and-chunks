@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/ovanderzee/chars-and-chunks.svg?branch=master)](https://travis-ci.com/ovanderzee/chars-and-chunks)
+[![Build Status](https://travis-ci.com/picturae/chars-and-chunks.svg?branch=master)](https://travis-ci.com/picturae/chars-and-chunks)
+[![Coverage Status](https://coveralls.io/repos/github/picturae/chars-and-chunks/badge.svg?branch=master)](https://coveralls.io/github/picturae/chars-and-chunks?branch=master)
 
 # Chars and Chunks
 
@@ -83,7 +84,7 @@ Examples:
 
 The bulk intake function for hotkey:
 
-    const cleanupHotkeys = charsAndChunks.hotkey ({
+    const cleanupHotkeys = charsAndChunks.hotkeys ({
         char: 'Backspace',
         context: this,
         callback: function logF () {console.log('Backspace pressed')},
@@ -105,7 +106,7 @@ the hotkey or barcode needs to executed to unregister:
       cleanupBarcode()
     }
 
-With an overlay, the existing listeners can be suppressed en new ones can be set:
+With an overlay, the existing listeners can be suppressed and new ones can be set:
 
     charsAndChunks.overlay()
     charsAndChunks.hotkey (....
