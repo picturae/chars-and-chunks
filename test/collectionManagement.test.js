@@ -225,7 +225,7 @@ describe('Good registration is handled well', function() {
     expect(ovvObj.barcodes instanceof Array).toBe(true)
   })
 
-  test('An help-screen with all active entries is coerced to the hosting application', () => {
+  test('An help-screen with all active matches is coerced to the hosting application', () => {
     collectionManagement.registerHotkey(registrations.OK)
     collectionManagement.registerBarcode(registrations.OK2)
     collectionManagement.registerBarcode(registrations.omittedRegex)

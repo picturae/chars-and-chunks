@@ -48,8 +48,8 @@ const collectionManagement = (function() {
    *    @member {function} callback
    *    @member {string} comment (optional)
    */
-  const registerEntry = function(props) {
-    props.entry = props.char || props.regex
+  const registerMatch = function(props) {
+    props.match = props.char || props.regex
     props.box = {
       callback: props.callback,
       comment: props.comment,
@@ -64,7 +64,7 @@ const collectionManagement = (function() {
   const registerHotkey = function(props) {
     delete props.regex
     if (registrationSanity(props)) {
-      registerEntry(props)
+      registerMatch(props)
       //console.log(`hotkey registered: ${props.char}`)
       return props
     }
@@ -93,8 +93,8 @@ const collectionManagement = (function() {
       if (!handle) {
         const records = dataLockBox.overview()
         records.some(record => {
-          if (record.entry instanceof Array && record.entry.includes(char)) {
-            handle = dataLockBox.retrieve({ entry: record.entry })
+          if (record.match instanceof Array && record.match.includes(char)) {
+            handle = dataLockBox.retrieve({ entry: record.match })
             //console.log(`handle found: ${handle.comment}`)
           }
           return Boolean(handle)
@@ -114,7 +114,7 @@ const collectionManagement = (function() {
       props.regex = catchAllRegExp
     }
     if (registrationSanity(props)) {
-      registerEntry(props)
+      registerMatch(props)
       //console.log(`barcode registered: ${props.regex}`)
       return props
     }
@@ -162,19 +162,19 @@ const collectionManagement = (function() {
     records.forEach(record => {
       if (
         record.box &&
-        (typeof record.entry === 'string' || record.entry instanceof Array)
+        (typeof record.match === 'string' || record.match instanceof Array)
       ) {
         let toEndUser = {
-          entry: record.entry.toString().replace(/(.+),(.+)/g, '$1, $2'),
+          match: record.match.toString().replace(/(.+),(.+)/g, '$1, $2'),
           comment: record.box.comment,
         }
         handles.hotkeys = handles.hotkeys
           ? handles.hotkeys.concat([toEndUser])
           : [toEndUser]
       }
-      if (record.box && record.entry instanceof RegExp) {
+      if (record.box && record.match instanceof RegExp) {
         let toEndUser = {
-          entry: 'barcode', //record.entry.toString(),
+          match: 'barcode', //record.match.toString(),
           comment: record.box.comment,
         }
         handles.barcodes = handles.barcodes
@@ -212,21 +212,21 @@ const collectionManagement = (function() {
     </svg>
     `
     let htmlString = `<table>`
-    const writeEntries = function(prop) {
+    const writeMatches = function(prop) {
       let str = `<thead><tr><th colspan="2">${prop}</th><tr></thead><tbody>`
       for (let item of handles[prop] || []) {
-        str += `<tr><th>${item.entry}</th><td>${item.comment}</td></tr>`
+        str += `<tr><th>${item.match}</th><td>${item.comment}</td></tr>`
       }
       return str + `</tbody>`
     }
     if (handles.hotkeys) {
-      htmlString += writeEntries('hotkeys')
+      htmlString += writeMatches('hotkeys')
     }
     if (handles.barcodes) {
-      htmlString += writeEntries('barcodes')
+      htmlString += writeMatches('barcodes')
     }
     if (!handles.hotkeys && !handles.barcodes) {
-      htmlString += writeEntries('no hotkeys or barcodes configured')
+      htmlString += writeMatches('no hotkeys or barcodes configured')
     }
 
     htmlString += `</table>`

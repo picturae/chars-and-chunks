@@ -27,33 +27,33 @@ const dataLockBox = (function() {
   }
 
   /**
-   * Store a user entry and a context as lock
-   * and a context as a box with entries holding data
+   * Store a user match and a context as lock
+   * and a context as a box with matches holding data
    * @private
    * @param {object} props
-   *    @member {primitive | object} entry
+   *    @member {primitive | object} match
    *    @member {object} context
    *    @member {primitive | object} box - the data itself
    */
   const store = function(props) {
     if (!storageSanity(props)) return
     // Register context with string or regular expression in a Map
-    data.lock.set(props.entry, props.context)
+    data.lock.set(props.match, props.context)
     if (!data.box.has(props.context)) {
       data.box.set(props.context, {})
     }
     // Register data with context in a WeakMap
-    data.box.get(props.context)[props.entry] = props.box
+    data.box.get(props.context)[props.match] = props.box
   }
 
   /**
    * Find the right data for entry
    * @param {object} props
-   *   @member {string} entry - key for the lock map
+   *   @member {string} match - key for the lock map
    * @returns {object} stored data object
    */
   const retrieve = function(props) {
-    //console.log(`entry to handle: ${props.entry}`)
+    //console.log(`match to handle: ${props.match}`)
 
     if (data.lock.has(props.entry)) {
       // find context from lock,
@@ -65,7 +65,7 @@ const dataLockBox = (function() {
   }
 
   /**
-   * Generate a list of active entries (those with a not-cleaned-up context)
+   * Generate a list of active matches (those with a not-cleaned-up context)
    * @returns {Array} records
    */
   const overview = function() {
@@ -75,7 +75,7 @@ const dataLockBox = (function() {
     for (let key of keys) {
       let box = retrieve({ entry: key })
       if (data.lock.get(key)) {
-        let record = { entry: key, box: box }
+        let record = { match: key, box: box }
         records.push(record)
       }
     }
@@ -84,7 +84,7 @@ const dataLockBox = (function() {
   }
 
   /**
-   * Clear all entries and data
+   * Clear all matches and data
    */
   const reset = function() {
     data = new LockBoxModel()
@@ -114,10 +114,10 @@ const dataLockBox = (function() {
    * @param {object} context
    */
   const cleanup = function(context) {
-    data.lock.forEach((entryVal, entry) => {
-      if (data.lock.get(entry) === context) {
-        //console.log(`cleanup '${data.box.get(context)[entry].comment}'`)
-        data.lock.set(entry, undefined)
+    data.lock.forEach((matchyVal, match) => {
+      if (data.lock.get(match) === context) {
+        //console.log(`cleanup '${data.box.get(context)[match].comment}'`)
+        data.lock.set(match, undefined)
       }
     })
     data.box.delete(context)
