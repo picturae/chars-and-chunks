@@ -48,13 +48,13 @@
 
 
     let logM = () => {console.log('m pressed')}
-    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'm', context: 'main', callback: logM, comment: 'Prints "m pressed" in the console' })
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'm', context: 'main', callback: logM, description: 'Prints "m pressed" in the console' })
     function logAltCtrlO () {console.log('ø pressed')}
-    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'ø', context: 'main', callback: logAltCtrlO, comment: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'ø', context: 'main', callback: logAltCtrlO, description: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
     function logAltShiftO () {console.log('Ø pressed')}
-    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'Ø', context: 'main', callback: logAltShiftO, comment: 'same as accesskey "o" in chrome|ff/win' })
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'Ø', context: 'main', callback: logAltShiftO, description: 'same as accesskey "o" in chrome|ff/win' })
     logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
-    var cleanMainBarcode = charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, comment: 'Prints "all-digit barcode scanned" in the console' })
+    var cleanMainBarcode = charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, description: 'Prints "all-digit barcode scanned" in the console' })
 
     document.getElementById('removeMain').addEventListener('click', function () {
       document.querySelector('main').remove()
@@ -114,10 +114,10 @@
     }
 
     var cleanupMultiple = charsAndChunks.hotkeys ([
-      { char: 'ArrowLeft', context: 'body', callback: focusPrevButton, comment: 'Focus on previous button'},
-      { char: 'ArrowRight', context: 'body', callback: focusNextButton, comment: 'Focus on next button'},
-      { char: 'Backspace', context: 'body', callback: focusTheBody, comment: 'Focus on the body'},
-      { char: 'ctrl+i', context: 'main', callback: focusTheInput, comment: 'Focus on the input'},
+      { char: 'ArrowLeft', context: 'body', callback: focusPrevButton, description: 'Focus on previous button'},
+      { char: 'ArrowRight', context: 'body', callback: focusNextButton, description: 'Focus on next button'},
+      { char: 'Backspace', context: 'body', callback: focusTheBody, description: 'Focus on the body'},
+      { char: 'ctrl+i', context: 'main', callback: focusTheInput, description: 'Focus on the input'},
     ])
 
     </script>

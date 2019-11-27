@@ -14,7 +14,7 @@ describe('Good registration is handled well', function() {
       callback: function(character) {
         console.log(`We saw a '${character}'`)
       },
-      comment: 'Logs the character seen',
+      description: 'Logs the character seen',
     }
 
     registrations.specialKey = {
@@ -23,7 +23,7 @@ describe('Good registration is handled well', function() {
       callback: function(character) {
         console.log(`We saw a '${character}'`)
       },
-      comment: 'Logs the special key seen',
+      description: 'Logs the special key seen',
     }
 
     registrations.array = {
@@ -32,7 +32,7 @@ describe('Good registration is handled well', function() {
       callback: function(character) {
         console.log(`We saw member '${character}'`)
       },
-      comment: 'Logs one of the members seen',
+      description: 'Logs one of the members seen',
     }
 
     registrations.OK2 = {
@@ -41,6 +41,7 @@ describe('Good registration is handled well', function() {
       callback: function(barcode) {
         console.log(`We saw a '${barcode}'`)
       },
+      description: `Let's go and see a barcode`,
     }
 
     registrations.omittedRegex = {
@@ -48,7 +49,7 @@ describe('Good registration is handled well', function() {
       callback: function(barcode) {
         console.log(`Any barcode could match this, but ${barcode} did.`)
       },
-      comment: 'Catches the uncaught',
+      description: 'Catches the uncaught',
     }
 
     registrations.simpleRegex = {
@@ -59,7 +60,7 @@ describe('Good registration is handled well', function() {
           `Barcodes with regular characters could match this, and ${barcode} did.`,
         )
       },
-      comment: 'Catches regular characters',
+      description: 'Catches regular characters',
     }
 
     registrations.advancedRegex = {
@@ -70,7 +71,7 @@ describe('Good registration is handled well', function() {
           `Barcodes with regular characters in a pattern will match this, and ${barcode} did.`,
         )
       },
-      comment: 'Catches regular characters with an underscore pattern',
+      description: 'Catches regular characters with an underscore pattern',
     }
   })
 
@@ -104,14 +105,22 @@ describe('Good registration is handled well', function() {
   })
 
   test(`An alternative registration, with a querySelector as context
-    and an omitted comment is sanity-checked and found OK`, () => {
+    is sanity-checked and found OK`, () => {
     const spyConsoleError2 = jest.spyOn(console, 'error')
     collectionManagement.registerBarcode(registrations.OK2)
 
     expect(spyConsoleError2).not.toHaveBeenCalled()
   })
 
-  test(`A faulty registration will not be stored`, () => {
+  test(`A registration lacking a description, will not be stored`, () => {
+    const spyConsoleStorage = jest.spyOn(dataLockBox, 'store')
+    registrations.OK2.description = ''
+    collectionManagement.registerBarcode(registrations.OK2)
+
+    expect(spyConsoleStorage).not.toHaveBeenCalled()
+  })
+
+  test(`A registration lacking a callback, typeof function, will not be stored`, () => {
     const spyConsoleStorage = jest.spyOn(dataLockBox, 'store')
     registrations.OK2.callback = []
     collectionManagement.registerBarcode(registrations.OK2)

@@ -13,7 +13,7 @@ describe('Context dependemt storage is volatile by design', function() {
         callback: function() {
           console.log("'Home' happend!")
         },
-        comment: "Logs the 'Home' event",
+        description: "Logs the 'Home' event",
       },
     }
 
@@ -24,7 +24,7 @@ describe('Context dependemt storage is volatile by design', function() {
         callback: function() {
           console.log("'Regex' happend!")
         },
-        comment: "Logs the 'Regex' event",
+        description: "Logs the 'Regex' event",
       },
     }
 
@@ -35,7 +35,7 @@ describe('Context dependemt storage is volatile by design', function() {
         callback: function() {
           console.log("'F' happend!")
         },
-        comment: "Logs the 'F' event",
+        description: "Logs the 'F' event",
       },
     }
   })

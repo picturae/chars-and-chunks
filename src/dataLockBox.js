@@ -2,7 +2,7 @@ const dataLockBox = (function() {
   /**
    * Definition of storage structure
    * @member {Map} lock - Map of characters and regular expressions holding a context.
-   * @member {WeakMap} box - WeakMap of contexts holding an object with a single charcter, a callback and optionally a comment
+   * @member {WeakMap} box - WeakMap of contexts holding an object with a single charcter, a callback and a description
    */
   const LockBoxModel = function() {
     this.lock = new Map()
@@ -116,7 +116,7 @@ const dataLockBox = (function() {
   const cleanup = function(context) {
     data.lock.forEach((matchyVal, match) => {
       if (data.lock.get(match) === context) {
-        //console.log(`cleanup '${data.box.get(context)[match].comment}'`)
+        //console.log(`cleanup '${data.box.get(context)[match].description}'`)
         data.lock.set(match, undefined)
       }
     })

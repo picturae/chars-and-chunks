@@ -26,11 +26,9 @@ const collectionManagement = (function() {
       return typeof props.context === 'object' //props.context instanceof Node
     })()
     const callbackOK = typeof props.callback === 'function'
-    // check optional comment
-    if (!props.comment || typeof props.comment !== 'string') {
-      props.comment = `callback for ${props.char || 'barcode'}`
-    }
-    const OK = matchOK && contextOK && callbackOK
+    const descriptionOK =
+      typeof props.description === 'string' && props.description.length
+    const OK = matchOK && contextOK && callbackOK && descriptionOK
     if (!OK) {
       console.error('Wrong properties for registering hotkeys or barcodes!')
       if (location.port) console.log(props)
@@ -46,13 +44,13 @@ const collectionManagement = (function() {
    *    @member {RegExp} regex (conditionally optional)
    *    @member {object} context - Node
    *    @member {function} callback
-   *    @member {string} comment (optional)
+   *    @member {string} description
    */
   const registerMatch = function(props) {
     props.match = props.char || props.regex
     props.box = {
       callback: props.callback,
-      comment: props.comment,
+      description: props.description,
     }
     dataLockBox.store(props)
   }
@@ -95,7 +93,7 @@ const collectionManagement = (function() {
         records.some(record => {
           if (record.match instanceof Array && record.match.includes(char)) {
             handle = dataLockBox.retrieve({ entry: record.match })
-            //console.log(`handle found: ${handle.comment}`)
+            //console.log(`handle found: ${handle.description}`)
           }
           return Boolean(handle)
         })
@@ -166,7 +164,7 @@ const collectionManagement = (function() {
       ) {
         let toEndUser = {
           match: record.match.toString().replace(/(.+),(.+)/g, '$1, $2'),
-          comment: record.box.comment,
+          description: record.box.description,
         }
         handles.hotkeys = handles.hotkeys
           ? handles.hotkeys.concat([toEndUser])
@@ -175,7 +173,7 @@ const collectionManagement = (function() {
       if (record.box && record.match instanceof RegExp) {
         let toEndUser = {
           match: 'barcode', //record.match.toString(),
-          comment: record.box.comment,
+          description: record.box.description,
         }
         handles.barcodes = handles.barcodes
           ? handles.barcodes.concat([toEndUser])
@@ -215,7 +213,7 @@ const collectionManagement = (function() {
     const writeMatches = function(prop) {
       let str = `<thead><tr><th colspan="2">${prop}</th><tr></thead><tbody>`
       for (let item of handles[prop] || []) {
-        str += `<tr><th>${item.match}</th><td>${item.comment}</td></tr>`
+        str += `<tr><th>${item.match}</th><td>${item.description}</td></tr>`
       }
       return str + `</tbody>`
     }

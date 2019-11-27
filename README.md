@@ -45,7 +45,7 @@ used. The properties are:
     invalid when the use case for the hotkey or barcode ended.
 * callback: the function to execute when keystroke passed or the
 pattern is matched.
-* comment: a comment or description of the callback function,
+* description: a description of the callback function,
     to be used in the overview
 
 The entry property is different. As hotkey:
@@ -65,21 +65,21 @@ Examples:
         char: 'h',
         context: document.querySelector('header'),
         callback: function () {console.log('h pressed')},
-        comment: 'Prints "h pressed" in the console'
+        description: 'Prints "h pressed" in the console'
     })
 
     const cleanupHotkey2 = charsAndChunks.hotkey ({
         char: 'ctrl+m',
         context: $scope,
         callback: () => {console.log('ctrl+m pressed')},
-        comment: 'Prints "ctrl+m pressed" in the console'
+        description: 'Prints "ctrl+m pressed" in the console'
     })
 
     const cleanupBarcode = charsAndChunks.barcode ({
         regex: /^\w+-\w+$/,
         context: 'form',
         callback: () => {console.log('yphen seperated barcode scanned')},
-        comment: 'Prints "yphen seperated barcode scanned" in the console'
+        description: 'Prints "yphen seperated barcode scanned" in the console'
     })
 
 The bulk intake function for hotkey:
@@ -88,12 +88,12 @@ The bulk intake function for hotkey:
         char: 'Backspace',
         context: this,
         callback: function logF () {console.log('Backspace pressed')},
-        comment: 'Prints "Backspace pressed" in the console'
+        description: 'Prints "Backspace pressed" in the console'
     }, {
         char: ['+', '='],
         context: 'canvas',
         callback: function logZoom () {console.log('zoom in')},
-        comment: 'Zoom in'
+        description: 'Zoom in'
     })
 
 When the controller or the element is destroyed, the function returned when registering
