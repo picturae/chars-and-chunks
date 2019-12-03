@@ -29,16 +29,16 @@
 
     <customfooter>
       <button id="removeFooter">remove custom footer</button>
-      <p>The custom footer is the context for the 'f' hotkey and a underscore seprated barcode</p>
+      <p>The custom footer is the context for the 'f' or 'F' multimatch hotkey and a underscore seprated barcode</p>
     </customfooter>
 
     <script>
     let header = document.querySelector('header')
 
     let logH = function () {console.log('h pressed')}
-    var cleanHeaderHotkey = charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH })
+    var cleanHeaderHotkey = charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH, description: 'Log pressing "h"' })
     let logAnyBarcode = function () {console.log('any barcode scanned')}
-    var cleanHeaderBarcode = charsAndChunks.barcode ({ context: header, callback: logAnyBarcode })
+    var cleanHeaderBarcode = charsAndChunks.barcode ({ context: header, callback: logAnyBarcode, description: 'Log scanning any barcode' })
 
     document.getElementById('removeHeader').addEventListener('click', function () {
       cleanHeaderHotkey()
@@ -65,14 +65,14 @@
 
     let customfooter = document.querySelector('customfooter')
 
-    function logF () {console.log('f pressed')}
-    var cleanFooterHotkey = charsAndChunks.hotkey ({ char: ['f', 'F'], context: customfooter, callback: logF })
+    function logF () {console.log('f or F pressed')}
+    var cleanFooterHotkeys = charsAndChunks.hotkey ({ char: ['f', 'F'], context: customfooter, callback: logF, description: 'Log pressing "f" or "F"' })
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
-    var cleanFooterBarcode = charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode })
+    var cleanFooterBarcode = charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode, description: 'Log scanning hyphen seperated barcode' })
 
     document.getElementById('removeFooter').addEventListener('click', function () {
       customfooter.remove()
-      cleanFooterHotkey()
+      cleanFooterHotkeys()
       cleanFooterBarcode()
     })
 

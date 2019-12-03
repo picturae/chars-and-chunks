@@ -97,7 +97,7 @@ describe('Good registration is handled well', function() {
     expect(spyConsoleError).not.toHaveBeenCalled()
   })
 
-  test('A registration with mukltip[le keys is sanity-checked and found OK', () => {
+  test('A registration with multiple keys is sanity-checked and found OK', () => {
     const spyConsoleError = jest.spyOn(console, 'error')
     collectionManagement.registerHotkey(registrations.array)
 
