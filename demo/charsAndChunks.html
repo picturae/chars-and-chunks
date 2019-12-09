@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <link type="text/css" href="../dist/charsAndChunks.css" rel="stylesheet" />
     <link type="text/css" href="./demo.css" rel="stylesheet" />
 
@@ -65,8 +66,8 @@
 
     let customfooter = document.querySelector('customfooter')
 
-    function logF () {console.log('f or F pressed')}
-    var cleanFooterHotkeys = charsAndChunks.hotkey ({ char: ['f', 'F'], context: customfooter, callback: logF, description: 'Log pressing "f" or "F"' })
+    function logF () {console.log('f, F or ƒ pressed')}
+    var cleanFooterHotkeys = charsAndChunks.hotkey ({ char: ['f', 'F', 'ƒ'], context: customfooter, callback: logF, description: 'Log pressing "f" or "F"' })
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
     var cleanFooterBarcode = charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode, description: 'Log scanning hyphen seperated barcode' })
 
@@ -114,8 +115,8 @@
     }
 
     var cleanupMultiple = charsAndChunks.hotkeys ([
-      { char: 'ArrowLeft', context: 'body', callback: focusPrevButton, description: 'Focus on previous button'},
-      { char: 'ArrowRight', context: 'body', callback: focusNextButton, description: 'Focus on next button'},
+      { char: ['ArrowUp', 'ArrowLeft'], context: 'body', callback: focusPrevButton, description: 'Focus on previous button'},
+      { char: ['ArrowDown', 'ArrowRight'], context: 'body', callback: focusNextButton, description: 'Focus on next button'},
       { char: 'Backspace', context: 'body', callback: focusTheBody, description: 'Focus on the body'},
       { char: 'ctrl+i', context: 'main', callback: focusTheInput, description: 'Focus on the input'},
     ])

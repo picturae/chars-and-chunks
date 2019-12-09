@@ -14,7 +14,7 @@ const collectionManagement = (function() {
   const registrationSanity = function(props) {
     const matchOK = (function() {
       if (props.char) {
-        return typeof props.char === 'string' || props.char instanceof Array
+        return typeof props.char === 'string' && props.char.length
       } else if (props.regex) {
         return props.regex instanceof RegExp
       }
@@ -61,10 +61,22 @@ const collectionManagement = (function() {
    */
   const registerHotkey = function(props) {
     delete props.regex
-    if (registrationSanity(props)) {
-      registerMatch(props)
-      //console.log(`hotkey registered: ${props.char}`)
-      return props
+    if (props.char instanceof Array) {
+      // route items in mulltiple match registrations
+      let lastSanePropIfAny, lastProp
+      props.char.forEach(char => {
+        const singleCharProps = Object.assign({}, props, { char: char })
+        lastProp = registerHotkey(singleCharProps)
+        if (lastProp) lastSanePropIfAny = lastProp
+      })
+      return lastSanePropIfAny
+    } else {
+      // simple flow
+      if (registrationSanity(props)) {
+        registerMatch(props)
+        // console.log(`hotkey registered: ${props.char}`)
+        return props
+      }
     }
   }
 
@@ -154,23 +166,58 @@ const collectionManagement = (function() {
    * @returns {object}
    */
   const overviewJson = function() {
-    let handles = {}
-    const records = dataLockBox.overview()
+    let records = dataLockBox.overview()
 
+    // look for multiMatches
+    let matchRecords = new Object()
     records.forEach(record => {
-      if (
-        record.box &&
-        (typeof record.match === 'string' || record.match instanceof Array)
-      ) {
+      var peers = records.filter(
+        other =>
+          other.box.callback === record.box.callback &&
+          other.box.description === record.box.description,
+      )
+      if (peers.length > 1) {
+        var matches = peers.map(peer => peer.match)
+        matchRecords[matches] = 'box'
+      }
+    })
+
+    // add multiMatches as one record, remove seperate records
+    const multiMatches = Object.keys(matchRecords)
+    multiMatches.forEach(multiMatch => {
+      const multiMatchArray = multiMatch.split(',')
+      multiMatchArray.forEach((matchItem, matchIndex) => {
+        records = records.map(record => {
+          if (record && record.match === matchItem) {
+            if (!matchIndex) {
+              // replace first matchItem
+              record = {
+                ...record,
+                match: multiMatch.replace(/,(\S)/g, ', $1'),
+              }
+            } else {
+              // remove rest of matchItems
+              record = null
+            }
+          }
+          return record
+        })
+      })
+    })
+
+    // split in keystrokes and barcodes
+    let handles = {}
+    records.forEach(record => {
+      if (record && record.box && typeof record.match === 'string') {
         let toEndUser = {
-          match: record.match.toString().replace(/(.+),(.+)/g, '$1, $2'),
+          match: record.match,
           description: record.box.description,
         }
         handles.hotkeys = handles.hotkeys
           ? handles.hotkeys.concat([toEndUser])
           : [toEndUser]
       }
-      if (record.box && record.match instanceof RegExp) {
+      if (record && record.box && record.match instanceof RegExp) {
         let toEndUser = {
           match: 'barcode', //record.match.toString(),
           description: record.box.description,
