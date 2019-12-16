@@ -9,7 +9,7 @@ describe('Good registration is handled well', function() {
     document.body.innerHTML = '<header></header><main></main><footer></footer>'
 
     registrations.OK = {
-      char: 'f',
+      char: '.',
       context: document.querySelector('main'),
       callback: function(character) {
         console.log(`We saw a '${character}'`)
@@ -27,7 +27,7 @@ describe('Good registration is handled well', function() {
     }
 
     registrations.array = {
-      char: ['+', '='],
+      char: ['+', '=', '.'],
       context: document.querySelector('main'),
       callback: function(character) {
         console.log(`We saw member '${character}'`)
@@ -53,7 +53,7 @@ describe('Good registration is handled well', function() {
     }
 
     registrations.simpleRegex = {
-      regex: /\w+/,
+      regex: /^\w+$/,
       context: document.querySelector('header'),
       callback: function(barcode) {
         console.log(
@@ -64,7 +64,7 @@ describe('Good registration is handled well', function() {
     }
 
     registrations.advancedRegex = {
-      regex: /\w+[_\w+]+/,
+      regex: /\w+(_\w+)+/,
       context: document.querySelector('header'),
       callback: function(barcode) {
         console.log(
@@ -82,6 +82,8 @@ describe('Good registration is handled well', function() {
   })
 
   /* Test collection logic */
+
+  /* Sanity checks */
 
   test('A registration is sanity-checked and found OK', () => {
     const spyConsoleError = jest.spyOn(console, 'error')
@@ -137,8 +139,10 @@ describe('Good registration is handled well', function() {
     expect(noRegexProps.regex instanceof RegExp).toBe(true)
   })
 
+  /* Handle matching entries */
+
   test('A registered callback is returned by entryHandler', () => {
-    const entry = 'f'
+    const entry = '.'
     const spyCallback = jest.spyOn(registrations.OK, 'callback')
     collectionManagement.registerHotkey(registrations.OK)
     const handle = collectionManagement.hotkeyHandler(entry)
@@ -167,20 +171,52 @@ describe('Good registration is handled well', function() {
     expect(spyCallback).toHaveBeenCalledWith(entry)
   })
 
+  test(`A registered key previously registered as one of multiple keys registered,
+    is only registered to its' new callback`, () => {
+    const entry = '.'
+    const entry3 = '+'
+
+    collectionManagement.registerHotkey(registrations.array)
+    const handle = collectionManagement.hotkeyHandler(entry)
+
+    collectionManagement.registerHotkey(registrations.OK)
+    const handle2 = collectionManagement.hotkeyHandler(entry)
+    const handle3 = collectionManagement.hotkeyHandler(entry3)
+
+    expect(handle.callback).not.toEqual(handle2.callback)
+    expect(handle.callback).toEqual(handle3.callback)
+  })
+
+  test(`A with multiple keys registered key previously soletary registered,
+    is only registered to its' new callback`, () => {
+    const entry = '.'
+    const entry3 = '+'
+
+    collectionManagement.registerHotkey(registrations.OK)
+    const handle = collectionManagement.hotkeyHandler(entry)
+
+    collectionManagement.registerHotkey(registrations.array)
+    const handle2 = collectionManagement.hotkeyHandler(entry)
+    const handle3 = collectionManagement.hotkeyHandler(entry3)
+
+    expect(handle.callback).not.toEqual(handle2.callback)
+    expect(handle2.callback).toEqual(handle3.callback)
+  })
+
+  /* Utiliity functions */
+
   test('All registrations can be reset', () => {
     collectionManagement.registerHotkey(registrations.OK)
     collectionManagement.registerBarcode(registrations.OK2)
     const handle = collectionManagement.hotkeyHandler(registrations.OK.char)
-    const handle2 = collectionManagement.barcodeHandler(registrations.OK2.regex)
+    const handle2 = collectionManagement.barcodeHandler('PICTURAE')
 
     collectionManagement.reset()
 
     const handle_reset = collectionManagement.hotkeyHandler(
       registrations.OK.char,
     )
-    const handle2_reset = collectionManagement.barcodeHandler(
-      registrations.OK2.regex,
-    )
+    const handle2_reset = collectionManagement.barcodeHandler('PICTURAE')
 
     expect(handle).toBeTruthy()
     expect(handle2).toBeTruthy()
@@ -188,28 +224,29 @@ describe('Good registration is handled well', function() {
     expect(handle2_reset).toBeFalsy()
   })
 
+  /* Barcode matching preference */
+
   test(`A barcode is paired to the lengthiest matching Regexp`, () => {
     const entryOmit = '32457+5456'
     const spyCallbackOmit = jest.spyOn(registrations.omittedRegex, 'callback')
     collectionManagement.registerBarcode(registrations.omittedRegex)
-    collectionManagement.barcodeHandler(entryOmit).callback(entryOmit)
-
-    expect(spyCallbackOmit).toHaveBeenCalledWith(entryOmit)
-
     const entrySimple = 'HEERHUGOWAARD'
     const spyCallbackSimple = jest.spyOn(registrations.simpleRegex, 'callback')
     collectionManagement.registerBarcode(registrations.simpleRegex)
-    collectionManagement.barcodeHandler(entrySimple).callback(entrySimple)
-
-    expect(spyCallbackSimple).toHaveBeenCalledWith(entrySimple)
-
     const entryAdv = 'RESULT_NOT_OK'
     const spyCallbackAdv = jest.spyOn(registrations.advancedRegex, 'callback')
     collectionManagement.registerBarcode(registrations.advancedRegex)
+
+    collectionManagement.barcodeHandler(entryOmit).callback(entryOmit)
+    collectionManagement.barcodeHandler(entrySimple).callback(entrySimple)
     collectionManagement.barcodeHandler(entryAdv).callback(entryAdv)
 
+    expect(spyCallbackOmit).toHaveBeenCalledWith(entryOmit)
+    expect(spyCallbackSimple).toHaveBeenCalledWith(entrySimple)
     expect(spyCallbackAdv).toHaveBeenCalledWith(entryAdv)
   })
+
+  /* Overview */
 
   test('A empty overview object is returned when nothing was configured', () => {
     const ovvObj = collectionManagement.overviewJson()
@@ -248,6 +285,8 @@ describe('Good registration is handled well', function() {
     expect(total.length).toBe(3)
     expect(barcodes.length).toBe(2)
   })
+
+  /* Cleanup */
 
   test('A cleanup function is returned when a hotkey or barcode is registered', () => {
     const cleanupOK = collectionManagement.registerHotkey(registrations.OK)
