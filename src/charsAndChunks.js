@@ -53,7 +53,7 @@ const charsAndChunksModule = (function() {
     const multiChar = event.key.length > 1
     if (multiChar) {
       // Do not wait for new characters
-      //console.log(`out of scope: '${event.key}' in stream: '${stream}'`)
+      // console.log(`out of scope: '${event.key}' in stream: '${stream}'`)
       if (stream.length && event.key === 'Enter') {
         settleStream(event)
         return
@@ -77,6 +77,7 @@ const charsAndChunksModule = (function() {
 
   return {
     publicAPI: {
+      register: collectionManagement.register,
       hotkey: collectionManagement.registerHotkey,
       hotkeys: collectionManagement.registerHotkeys,
       barcode: collectionManagement.registerBarcode,

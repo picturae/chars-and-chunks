@@ -7,9 +7,7 @@ roadmap
     controller and be sure the right overlay is removed.
 * always active hotkeys, like ? for help en Escape for closing modals.
     make a persistent table and merge it in any new layer.
-* be hotkey/barcode agnostic for registration.
 * automatic cleanup on html elements
-* no regex omission.
 
 new in 2.0.0
 
@@ -18,3 +16,6 @@ new in 2.0.0
     * multiple registration,
     * find the multiple hotkeys in overview and show them as an array.
 * rename comment to description being required
+* be hotkey/barcode agnostic for registration.
+    * context can be omitted when registering.
+* no regex omission.

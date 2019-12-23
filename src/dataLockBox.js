@@ -36,14 +36,18 @@ const dataLockBox = (function() {
    *    @member {primitive | object} box - the data itself
    */
   const store = function(props) {
+    // console.log(`match to write: ${props.match}`)
     if (!storageSanity(props)) return
     // Register context with string or regular expression in a Map
     data.lock.set(props.match, props.context)
+    // console.log(`context written: ${data.lock.get(props.match)}`)
     if (!data.box.has(props.context)) {
       data.box.set(props.context, {})
     }
+    // console.log(`box to write: ${data.box.get(props.context)}`)
     // Register data with context in a WeakMap
     data.box.get(props.context)[props.match] = props.box
+    // console.log(`box written: ${data.box.get(props.context)}`)
   }
 
   /**
@@ -53,13 +57,17 @@ const dataLockBox = (function() {
    * @returns {object} stored data object
    */
   const retrieve = function(props) {
-    //console.log(`match to handle: ${props.match}`)
+    // console.log(`entry to handle: ${props.entry}`)
 
     if (data.lock.has(props.entry)) {
       // find context from lock,
       let context = data.lock.get(props.entry)
+      // console.log(`context to handle: ${context}`)
       if (context && data.box.has(context)) {
-        return data.box.get(context)[props.entry]
+        const box = data.box.get(context)[props.entry]
+        // console.log(`box to handle:`)
+        // console.log(box)
+        return box
       }
     }
   }

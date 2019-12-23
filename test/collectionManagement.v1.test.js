@@ -135,8 +135,11 @@ describe('Good registration is handled well in version 1', function() {
     let noRegexProps = Object.assign({}, registrations.OK2)
     delete noRegexProps.regex
     collectionManagement.registerBarcode(noRegexProps)
+    const handleUndef = collectionManagement.barcodeHandler(undefined)
+    const handleAny = collectionManagement.barcodeHandler('œ™=v')
 
-    expect(noRegexProps.regex instanceof RegExp).toBe(true)
+    expect(noRegexProps.callback).toBe(handleUndef.callback)
+    expect(noRegexProps.callback).toBe(handleAny.callback)
   })
 
   /* Handle matching entries */
@@ -206,16 +209,15 @@ describe('Good registration is handled well in version 1', function() {
   /* Utiliity functions */
 
   test('All registrations can be reset', () => {
+    const entry = registrations.OK.char
     collectionManagement.registerHotkey(registrations.OK)
     collectionManagement.registerBarcode(registrations.OK2)
-    const handle = collectionManagement.hotkeyHandler(registrations.OK.char)
+    const handle = collectionManagement.hotkeyHandler(entry)
     const handle2 = collectionManagement.barcodeHandler('PICTURAE')
 
     collectionManagement.reset()
 
-    const handle_reset = collectionManagement.hotkeyHandler(
-      registrations.OK.char,
-    )
+    const handle_reset = collectionManagement.hotkeyHandler(entry)
     const handle2_reset = collectionManagement.barcodeHandler('PICTURAE')
 
     expect(handle).toBeTruthy()
@@ -237,9 +239,13 @@ describe('Good registration is handled well in version 1', function() {
     const spyCallbackAdv = jest.spyOn(registrations.advancedRegex, 'callback')
     collectionManagement.registerBarcode(registrations.advancedRegex)
 
-    collectionManagement.barcodeHandler(entryOmit).callback(entryOmit)
-    collectionManagement.barcodeHandler(entrySimple).callback(entrySimple)
-    collectionManagement.barcodeHandler(entryAdv).callback(entryAdv)
+    const handleOmit = collectionManagement.barcodeHandler(entryOmit)
+    const handleSimple = collectionManagement.barcodeHandler(entrySimple)
+    const handleAdv = collectionManagement.barcodeHandler(entryAdv)
+
+    handleOmit.callback(entryOmit)
+    handleSimple.callback(entrySimple)
+    handleAdv.callback(entryAdv)
 
     expect(spyCallbackOmit).toHaveBeenCalledWith(entryOmit)
     expect(spyCallbackSimple).toHaveBeenCalledWith(entrySimple)
@@ -296,13 +302,14 @@ describe('Good registration is handled well in version 1', function() {
 
   test(`A cleanup removes references to the context of a hotkey or barcode,
       and therefore the hotkey or barcode can not be used anymore`, () => {
+    const entry = registrations.OK.char
     const cleanup = collectionManagement.registerHotkey(registrations.OK)
-    const handle1 = collectionManagement.hotkeyHandler(registrations.OK.char)
+    const handle1 = collectionManagement.hotkeyHandler(entry)
 
     expect(registrations.OK.box).toBe(handle1)
 
     cleanup()
-    const handle2 = collectionManagement.hotkeyHandler(registrations.OK.char)
+    const handle2 = collectionManagement.hotkeyHandler(entry)
 
     expect(registrations.OK.box).not.toBe(handle2)
   })
