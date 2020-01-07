@@ -121,6 +121,10 @@ To reset the current set of matches:
 
     charsAndChunks.reset()
 
+To change a setting in the eventListener:
+
+    charsAndChunks.config({key: 'value'})
+
 ## Notes
 
 ### Version 1

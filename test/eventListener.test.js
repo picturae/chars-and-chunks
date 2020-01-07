@@ -143,4 +143,31 @@ describe("It's all around a keyboard event", function() {
     expect(spyHotkey).not.toHaveBeenCalled()
     expect(spyBarcode).not.toHaveBeenCalled()
   })
+
+  /* Config */
+
+  test(`A configuration setting can be changed`, () => {
+    const spyBarcode = jest.spyOn(collectionManagement, 'barcodeHandler')
+
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.Enter)
+
+    expect(spyBarcode).not.toHaveBeenCalled()
+
+    charsAndChunks.config({ minimalBarcodeLength: 5 })
+    const spyBarcode2 = jest.spyOn(collectionManagement, 'barcodeHandler')
+
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.f)
+    window.dispatchEvent(keyStrokes.Enter)
+
+    expect(spyBarcode2).toHaveBeenCalledWith('fffff')
+  })
 })

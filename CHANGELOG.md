@@ -15,7 +15,8 @@ new in 2.0.0
     that is unwanted - it should work as follows:
     * multiple registration,
     * find the multiple hotkeys in overview and show them as an array.
-* rename comment to description being required
+* rename comment to description, now being required
 * be hotkey/barcode agnostic for registration.
     * context can be omitted when registering.
 * no regex omission.
+* configuration of some settings for the event listener
