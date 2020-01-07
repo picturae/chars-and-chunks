@@ -7,35 +7,35 @@ describe('Context dependemt storage is volatile by design', function() {
     document.body.innerHTML = '<header></header><main></main><footer></footer>'
 
     dataItems.Home = {
-      entry: 'Home',
+      match: 'Home',
       context: document.querySelector('header'),
       box: {
         callback: function() {
           console.log("'Home' happend!")
         },
-        comment: "Logs the 'Home' event",
+        description: "Logs the 'Home' event",
       },
     }
 
     dataItems.Regex = {
-      entry: /\w{2,7}/,
+      match: /\w{2,7}/,
       context: document.querySelector('main'),
       box: {
         callback: function() {
           console.log("'Regex' happend!")
         },
-        comment: "Logs the 'Regex' event",
+        description: "Logs the 'Regex' event",
       },
     }
 
     dataItems.F = {
-      entry: 'F',
+      match: 'F',
       context: document.querySelector('footer'),
       box: {
         callback: function() {
           console.log("'F' happend!")
         },
-        comment: "Logs the 'F' event",
+        description: "Logs the 'F' event",
       },
     }
   })
@@ -50,18 +50,18 @@ describe('Context dependemt storage is volatile by design', function() {
 
   test('Stored data can be retrieved', () => {
     dataLockBox.store(dataItems.Home)
-    const HomeItemHandle = dataLockBox.retrieve({ entry: dataItems.Home.entry })
+    const HomeItemHandle = dataLockBox.retrieve({ entry: dataItems.Home.match })
 
     expect(HomeItemHandle).toBe(dataItems.Home.box)
   })
 
-  test("Storing without 'entry' property creates a key with value undefined", () => {
-    let noEntryData = dataItems.Home
-    delete noEntryData.entry
-    dataLockBox.store(noEntryData)
-    const noEntryHandle = dataLockBox.retrieve({ entry: noEntryData.entry })
+  test("Storing without 'match' property creates a key with value undefined", () => {
+    let noMatchData = dataItems.Home
+    delete noMatchData.match
+    dataLockBox.store(noMatchData)
+    const noMatchHandle = dataLockBox.retrieve({ entry: noMatchData.match })
 
-    expect(noEntryHandle).toBe(noEntryData.box)
+    expect(noMatchHandle).toBe(noMatchData.box)
   })
 
   test("Storing without 'context' property is not allowed", () => {
@@ -77,7 +77,7 @@ describe('Context dependemt storage is volatile by design', function() {
     let noBoxData = dataItems.Home
     delete noBoxData.box
     dataLockBox.store(noBoxData)
-    const noBoxHandle = dataLockBox.retrieve({ entry: noBoxData.entry })
+    const noBoxHandle = dataLockBox.retrieve({ entry: noBoxData.match })
 
     expect(noBoxHandle).toBe(undefined)
   })

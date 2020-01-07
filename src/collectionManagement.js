@@ -7,34 +7,60 @@ const collectionManagement = (function() {
   const catchAllRegExp = /^/
 
   /**
+   * Update deprecated v1 properties object
+   * @private
+   * @param {object} props - props according to version 1
+   * @returns {object}
+   */
+  const convertVersion1Props = function(props) {
+    if (!props.match && !props.regex && !props.char) {
+      props.match = catchAllRegExp
+    }
+    if (props.regex) {
+      props.match = props.regex
+      delete props.regex
+    }
+    if (props.char) {
+      props.match = props.char
+      delete props.char
+    }
+    if (props.comment) {
+      props.description = props.comment
+      delete props.comment
+    }
+    return props
+  }
+
+  /**
    * Check sanity of a registration object
    * @private
    * @param {object} props
+   * @returns {boolean}
    */
   const registrationSanity = function(props) {
-    const matchOK = (function() {
-      if (props.char) {
-        return typeof props.char === 'string' || props.char instanceof Array
-      } else if (props.regex) {
-        return props.regex instanceof RegExp
-      }
-    })()
+    const matchOK =
+      props.match &&
+      props.match.toString().length &&
+      (typeof props.match === 'string' || props.match instanceof RegExp)
     const contextOK = (function() {
       if (typeof props.context === 'string') {
         props.context = document.querySelector(props.context)
       }
-      return typeof props.context === 'object' //props.context instanceof Node
+      return props.context && typeof props.context === 'object'
+      //props.context instanceof Node
     })()
     const callbackOK = typeof props.callback === 'function'
-    // check optional comment
-    if (!props.comment || typeof props.comment !== 'string') {
-      props.comment = `callback for ${props.char || 'barcode'}`
-    }
-    const OK = matchOK && contextOK && callbackOK
-    if (!OK) {
-      console.error('Wrong properties for registering hotkeys or barcodes!')
-      if (location.port) console.log(props)
-    }
+    const descriptionOK =
+      typeof props.description === 'string' && props.description.length
+    const OK = matchOK && contextOK && callbackOK && descriptionOK
+
+    // if (!OK) {
+    //   console.log(`!OK ${JSON.stringify(props)}`)
+    //   console.log(`
+    //     matchOK: ${matchOK}, contextOK: ${contextOK},
+    //     callbackOK: ${callbackOK}, descriptionOK: ${descriptionOK}
+    //   `)
+    // }
     return OK
   }
 
@@ -42,17 +68,18 @@ const collectionManagement = (function() {
    * Register a context to trigger a function when any barcode is encountered
    * @private
    * @param {object} props
-   *    @member {string} char (conditionally optional)
-   *    @member {RegExp} regex (conditionally optional)
+   *    @member {string} char (v1, conditionally optional)
+   *    @member {RegExp} regex (v1, conditionally optional)
+   *    @member {string || RegExp} match (v2)
    *    @member {object} context - Node
    *    @member {function} callback
-   *    @member {string} comment (optional)
+   *    @member {string} description
    */
-  const registerEntry = function(props) {
-    props.entry = props.char || props.regex
+  const registerMatch = function(props) {
+    props.match = props.match || props.char || props.regex
     props.box = {
       callback: props.callback,
-      comment: props.comment,
+      description: props.description,
     }
     dataLockBox.store(props)
   }
@@ -60,16 +87,81 @@ const collectionManagement = (function() {
   /**
    * Register a context to trigger a function when the character is pressed
    * @param {object} props
+   * @param {object} context - only required for resursive calls
+   */
+  const register = function(
+    props,
+    context = {
+      time: Date.now(),
+      random: Math.floor(Math.random() * Math.floor(99999)),
+    },
+  ) {
+    if (props instanceof Array) {
+      // bulk registration
+      props.forEach(matchProps => {
+        register(matchProps, context)
+      })
+    } else {
+      props.context = context
+
+      // object registration
+      if (props.match instanceof Array) {
+        // mulltiple match registration
+        props.match.forEach(matchItem => {
+          const matchProps = {
+            ...props,
+            match: matchItem,
+          }
+          register(matchProps, context)
+        })
+      } else {
+        // simple flow
+        if (registrationSanity(props)) {
+          registerMatch(props)
+        }
+      }
+    }
+
+    // return a cleanup function
+    const cleanUpFn = function() {
+      dataLockBox.cleanup(context)
+    }
+    return cleanUpFn
+  }
+
+  /**
+   * Register a context to trigger a function when the character is pressed
+   * @deprecated since version 2.0
+   * @param {object} props
+   * @returns {object}
    */
   const registerHotkey = function(props) {
-    delete props.regex
-    if (registrationSanity(props)) {
-      registerEntry(props)
-      //console.log(`hotkey registered: ${props.char}`)
-      return props
+    convertVersion1Props(props)
+    if (props.match instanceof Array) {
+      // route items in mulltiple match registrations
+      let lastSanePropIfAny, lastProp
+      props.match.forEach(char => {
+        const singleCharProps = Object.assign({}, props, { match: char })
+        lastProp = registerHotkey(singleCharProps)
+        if (lastProp) lastSanePropIfAny = lastProp
+      })
+      return lastSanePropIfAny
+    } else {
+      // simple flow
+      if (registrationSanity(props)) {
+        registerMatch(props)
+        // console.log(`hotkey registered: ${props.match}`)
+        return props
+      }
     }
   }
 
+  /**
+   * Register an array of contexts to trigger a function when the character is pressed
+   * @deprecated since version 2.0
+   * @param {array} propsList
+   * @returns {array}
+   */
   const registerHotkeys = function(propsList) {
     let refsList = []
     propsList.forEach(props => {
@@ -81,11 +173,11 @@ const collectionManagement = (function() {
 
   /**
    * Find the right data for hotkey
-   * @param {string} char
+   * @param {string} match
    * @returns {object} data object
    */
   const hotkeyHandler = function(char) {
-    //console.log('hotkeyHandler ' + char)
+    // console.log('hotkeyHandler ' + char)
     if (char === '?') {
       toggleOverviewPanel()
     } else {
@@ -93,9 +185,9 @@ const collectionManagement = (function() {
       if (!handle) {
         const records = dataLockBox.overview()
         records.some(record => {
-          if (record.entry instanceof Array && record.entry.includes(char)) {
-            handle = dataLockBox.retrieve({ entry: record.entry })
-            //console.log(`handle found: ${handle.comment}`)
+          if (record.match instanceof Array && record.match.includes(char)) {
+            handle = dataLockBox.retrieve({ entry: record.match })
+            // console.log(`handle found: ${handle.description}`)
           }
           return Boolean(handle)
         })
@@ -106,16 +198,16 @@ const collectionManagement = (function() {
 
   /**
    * Register a context to trigger a function when any barcode is encountered
+   * @deprecated since version 2.0
    * @param {object} props
+   * @returns {object || undefined}
    */
   const registerBarcode = function(props) {
-    delete props.char
-    if (!props.regex) {
-      props.regex = catchAllRegExp
-    }
+    // console.log(' registerBarcode registerBarcode ')
+    convertVersion1Props(props)
     if (registrationSanity(props)) {
-      registerEntry(props)
-      //console.log(`barcode registered: ${props.regex}`)
+      registerMatch(props)
+      // console.log(`barcode registered: ${props.match}`)
       return props
     }
   }
@@ -127,7 +219,7 @@ const collectionManagement = (function() {
    * @returns {RegExp}
    */
   const barcodeMatch = function(barcode) {
-    let regex = catchAllRegExp
+    let regex = ''
     const keys = dataLockBox.keys()
 
     for (let key of keys) {
@@ -138,6 +230,7 @@ const collectionManagement = (function() {
         }
       }
     }
+    // console.log(`barcodeMatch: ${regex}`)
     return regex
   }
 
@@ -147,8 +240,13 @@ const collectionManagement = (function() {
    * @returns {object} data object
    */
   const barcodeHandler = function(barcode) {
-    const regex = barcodeMatch(barcode)
-    return dataLockBox.retrieve({ entry: regex })
+    // console.log('barcodeHandler barcode ' + barcode)
+    const pattern = barcodeMatch(barcode)
+    // console.log('barcodeHandler pattern ' + pattern)
+    const retrieved = dataLockBox.retrieve({ entry: pattern })
+    // console.log('barcodeHandler retrieved ')
+    // console.log(retrieved)
+    return retrieved
   }
 
   /**
@@ -156,26 +254,61 @@ const collectionManagement = (function() {
    * @returns {object}
    */
   const overviewJson = function() {
-    let handles = {}
-    const records = dataLockBox.overview()
+    let records = dataLockBox.overview()
 
+    // look for multiMatches
+    let matchRecords = new Object()
     records.forEach(record => {
-      if (
-        record.box &&
-        (typeof record.entry === 'string' || record.entry instanceof Array)
-      ) {
+      var peers = records.filter(
+        other =>
+          other.box.callback === record.box.callback &&
+          other.box.description === record.box.description,
+      )
+      if (peers.length > 1) {
+        var matches = peers.map(peer => peer.match)
+        matchRecords[matches] = 'box'
+      }
+    })
+
+    // add multiMatches as one record, remove seperate records
+    const multiMatches = Object.keys(matchRecords)
+    multiMatches.forEach(multiMatch => {
+      const multiMatchArray = multiMatch.split(',')
+      multiMatchArray.forEach((matchItem, matchIndex) => {
+        records = records.map(record => {
+          if (record && record.match === matchItem) {
+            if (!matchIndex) {
+              // replace first matchItem
+              record = {
+                ...record,
+                match: multiMatch.replace(/,(\S)/g, ', $1'),
+              }
+            } else {
+              // remove rest of matchItems
+              record = null
+            }
+          }
+          return record
+        })
+      })
+    })
+
+    // split in keystrokes and barcodes
+    let handles = {}
+    records.forEach(record => {
+      if (record && record.box && typeof record.match === 'string') {
         let toEndUser = {
-          entry: record.entry.toString().replace(/(.+),(.+)/g, '$1, $2'),
-          comment: record.box.comment,
+          match: record.match,
+          description: record.box.description,
         }
         handles.hotkeys = handles.hotkeys
           ? handles.hotkeys.concat([toEndUser])
           : [toEndUser]
       }
-      if (record.box && record.entry instanceof RegExp) {
+      if (record && record.box && record.match instanceof RegExp) {
         let toEndUser = {
-          entry: 'barcode', //record.entry.toString(),
-          comment: record.box.comment,
+          match: 'barcode', //record.match.toString(),
+          description: record.box.description,
         }
         handles.barcodes = handles.barcodes
           ? handles.barcodes.concat([toEndUser])
@@ -212,21 +345,21 @@ const collectionManagement = (function() {
     </svg>
     `
     let htmlString = `<table>`
-    const writeEntries = function(prop) {
+    const writeMatches = function(prop) {
       let str = `<thead><tr><th colspan="2">${prop}</th><tr></thead><tbody>`
       for (let item of handles[prop] || []) {
-        str += `<tr><th>${item.entry}</th><td>${item.comment}</td></tr>`
+        str += `<tr><th>${item.match}</th><td>${item.description}</td></tr>`
       }
       return str + `</tbody>`
     }
     if (handles.hotkeys) {
-      htmlString += writeEntries('hotkeys')
+      htmlString += writeMatches('hotkeys')
     }
     if (handles.barcodes) {
-      htmlString += writeEntries('barcodes')
+      htmlString += writeMatches('barcodes')
     }
     if (!handles.hotkeys && !handles.barcodes) {
-      htmlString += writeEntries('no hotkeys or barcodes configured')
+      htmlString += writeMatches('no hotkeys or barcodes configured')
     }
 
     htmlString += `</table>`
@@ -277,6 +410,7 @@ const collectionManagement = (function() {
   }
 
   return {
+    register: register,
     registerHotkey: function(props) {
       const saneProps = registerHotkey(props)
       return function() {

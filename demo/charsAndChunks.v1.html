@@ -11,7 +11,7 @@
     <header>
       <button id="removeHeader">remove header</button>
       <h1>Demo of keystroking and barcode scanning</h1>
-      <p>The header is the scope of the 'h' hotkey or any barcode</p>
+      <p>The header is the context for the 'h' hotkey or any barcode</p>
     </header>
 
     <main>
@@ -19,27 +19,27 @@
       <button accesskey="o"
         onclick="charsAndChunks.help()"
       >show overview</button>
-      <p>The main element is the scope of the 'm' hotkey and a all-digit barcode</p>
+      <p>The main element is the context for the 'm' hotkey and a all-digit barcode</p>
       <p>There is an accesskey set on the "show overview" button</p>
       <p>Navigate the buttons with ArrowLeft or ArrowRight</p>
       <input placeholder="try the input" type="text "/>
-      <p>Focus the input with Ctrl+i keycombination (Tab out of the input to continue using chars-and-chunks. Your form-entry should not have side-effects.)</p>
+      <p>Focus the input with Ctrl+i keycombination</p>
       <p>Blur any element with Backspace</p>
 
     </main>
 
     <customfooter>
       <button id="removeFooter">remove custom footer</button>
-      <p>The custom footer is the scope of the 'f' or 'F' multimatch hotkey and a hyphen seprated barcode</p>
+      <p>The custom footer is the context for the 'f' or 'F' multimatch hotkey and a hyphen seprated barcode</p>
     </customfooter>
 
     <script>
     let header = document.querySelector('header')
 
     let logH = function () {console.log('h pressed')}
-    var cleanHeaderHotkey = charsAndChunks.register ({ match: 'h', callback: logH, description: 'Log pressing "h"' })
+    var cleanHeaderHotkey = charsAndChunks.hotkey ({ char: 'h', context: header, callback: logH, description: 'Log pressing "h"' })
     let logAnyBarcode = function () {console.log('any barcode scanned')}
-    var cleanHeaderBarcode = charsAndChunks.register ({ match: /^/, callback: logAnyBarcode, description: 'Log scanning any barcode' })
+    var cleanHeaderBarcode = charsAndChunks.barcode ({ match: /^/, context: header, callback: logAnyBarcode, description: 'Log scanning any barcode' })
 
     document.getElementById('removeHeader').addEventListener('click', function () {
       cleanHeaderHotkey()
@@ -49,13 +49,13 @@
 
 
     let logM = () => {console.log('m pressed')}
-    var cleanMainHotkey = charsAndChunks.register ({ match: 'm', callback: logM, description: 'Prints "m pressed" in the console' })
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'm', context: 'main', callback: logM, description: 'Prints "m pressed" in the console' })
     function logAltCtrlO () {console.log('ø pressed')}
-    var cleanMainHotkey = charsAndChunks.register ({ match: 'ø', callback: logAltCtrlO, description: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'ø', context: 'main', callback: logAltCtrlO, description: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
     function logAltShiftO () {console.log('Ø pressed')}
-    var cleanMainHotkey = charsAndChunks.register ({ match: 'Ø', callback: logAltShiftO, description: 'same as accesskey "o" in chrome|ff/win' })
+    var cleanMainHotkey = charsAndChunks.hotkey ({ char: 'Ø', context: 'main', callback: logAltShiftO, description: 'same as accesskey "o" in chrome|ff/win' })
     logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
-    var cleanMainBarcode = charsAndChunks.register ({ match: /^\d+$/, callback: logAllDigitBarcode, description: 'Prints "all-digit barcode scanned" in the console' })
+    var cleanMainBarcode = charsAndChunks.barcode ({ regex: /^\d+$/, context: 'main', callback: logAllDigitBarcode, description: 'Prints "all-digit barcode scanned" in the console' })
 
     document.getElementById('removeMain').addEventListener('click', function () {
       document.querySelector('main').remove()
@@ -67,9 +67,9 @@
     let customfooter = document.querySelector('customfooter')
 
     function logF () {console.log('f, F or ƒ pressed')}
-    var cleanFooterHotkeys = charsAndChunks.register ({ match: ['f', 'F', 'ƒ'], callback: logF, description: 'Log pressing "f" or "F"' })
+    var cleanFooterHotkeys = charsAndChunks.hotkey ({ char: ['f', 'F', 'ƒ'], context: customfooter, callback: logF, description: 'Log pressing "f" or "F"' })
     function logHyphenSeperatedBarcode () {console.log('hyphen seperated barcode scanned')}
-    var cleanFooterBarcode = charsAndChunks.register ({ match: /^\w+-\w+$/, callback: logHyphenSeperatedBarcode, description: 'Log scanning hyphen seperated barcode' })
+    var cleanFooterBarcode = charsAndChunks.barcode ({ regex: /^\w+-\w+$/, context: customfooter, callback: logHyphenSeperatedBarcode, description: 'Log scanning hyphen seperated barcode' })
 
     document.getElementById('removeFooter').addEventListener('click', function () {
       customfooter.remove()
@@ -114,11 +114,11 @@
       document.querySelector('input').focus()
     }
 
-    var cleanupMultiple = charsAndChunks.register ([
-      { match: ['ArrowUp', 'ArrowLeft'], callback: focusPrevButton, description: 'Focus on previous button'},
-      { match: ['ArrowDown', 'ArrowRight'], callback: focusNextButton, description: 'Focus on next button'},
-      { match: 'Backspace', callback: focusTheBody, description: 'Focus on the body'},
-      { match: 'ctrl+i', callback: focusTheInput, description: 'Focus on the input'},
+    var cleanupMultiple = charsAndChunks.hotkeys ([
+      { char: ['ArrowUp', 'ArrowLeft'], context: 'body', callback: focusPrevButton, description: 'Focus on previous button'},
+      { char: ['ArrowDown', 'ArrowRight'], context: 'body', callback: focusNextButton, description: 'Focus on next button'},
+      { char: 'Backspace', context: 'body', callback: focusTheBody, description: 'Focus on the body'},
+      { char: 'ctrl+i', context: 'main', callback: focusTheInput, description: 'Focus on the input'},
     ])
 
     </script>
