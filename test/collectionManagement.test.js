@@ -295,17 +295,27 @@ describe('Good registration is handled well', function() {
     expect(registrations.OK.box).not.toBe(handle2)
   })
 
-  test(`A array of hotkey-registrations can be done in one call,
+  test(`A array of hotkeys can be bulk-registered in one call,
       and so the cleanup can also be done in one call`, () => {
-    const spyCleanup = jest.spyOn(dataLockBox, 'cleanup')
-
     const cleanupRefs = collectionManagement.register([
-      registrations.OK,
       registrations.specialKey,
       registrations.array,
     ])
+
+    const entrySpecial = registrations.specialKey.match
+    const handleSpecial = collectionManagement.hotkeyHandler(entrySpecial)
+    const entryArray = registrations.array.match[0]
+    const handleArray = collectionManagement.hotkeyHandler(entryArray)
+
+    expect(registrations.specialKey.box).toBe(handleSpecial)
+    expect(registrations.array.description).toBe(handleArray.description)
+
     cleanupRefs()
 
-    expect(spyCleanup).toHaveBeenCalledTimes(1)
+    const handleSpecial2 = collectionManagement.hotkeyHandler(entrySpecial)
+    const handleArray2 = collectionManagement.hotkeyHandler(entryArray)
+
+    expect(handleSpecial2).toBeFalsy()
+    expect(handleArray2).toBeFalsy()
   })
 })

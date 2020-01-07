@@ -68,8 +68,9 @@ const collectionManagement = (function() {
    * Register a context to trigger a function when any barcode is encountered
    * @private
    * @param {object} props
-   *    @member {string} char (conditionally optional)
-   *    @member {RegExp} regex (conditionally optional)
+   *    @member {string} char (v1, conditionally optional)
+   *    @member {RegExp} regex (v1, conditionally optional)
+   *    @member {string || RegExp} match (v2)
    *    @member {object} context - Node
    *    @member {function} callback
    *    @member {string} description
@@ -86,36 +87,37 @@ const collectionManagement = (function() {
   /**
    * Register a context to trigger a function when the character is pressed
    * @param {object} props
+   * @param {object} context - only required for resursive calls
    */
-  const register = function(props) {
-    const context = {
+  const register = function(
+    props,
+    context = {
       time: Date.now(),
       random: Math.floor(Math.random() * Math.floor(99999)),
-    }
+    },
+  ) {
     if (props instanceof Array) {
       // bulk registration
       props.forEach(matchProps => {
-        matchProps.context = context
-        register(matchProps)
+        register(matchProps, context)
       })
     } else {
+      props.context = context
+
       // object registration
       if (props.match instanceof Array) {
         // mulltiple match registration
         props.match.forEach(matchItem => {
           const matchProps = {
             ...props,
-            context: context,
             match: matchItem,
           }
-          register(matchProps)
+          register(matchProps, context)
         })
       } else {
         // simple flow
-        props.context = context
         if (registrationSanity(props)) {
           registerMatch(props)
-          // console.log(`match registered: ${props.match}`)
         }
       }
     }
