@@ -90,20 +90,26 @@ Bulk intake function, multiple matches:
         description: 'Increase with multiple matches'
     }])
 
-When the controller or the element is destroyed, the function returned
+When the component or the element is destroyed, the function returned
 when registering the match needs to executed to unregister:
 
-    const cleanupHotkey = charsAndChunks.register (...
-    const cleanupPattern = charsAndChunks.register (...
-    controller.ondestroy = function () {
+    const cleanupHotkey = charsAndChunks.register (...)
+    const cleanupPattern = charsAndChunks.register (...)
+    component.ondestroy = function () {
       cleanupHotkey()
       cleanupPattern()
     }
 
+You will not find an unregister or toggle method in the API.
+When you need to remove or switch off a hotkey,
+you should register the hotkey separately in the beginning,
+and use the cleanup function to disable the hotkey. 
+The hotkey may later be registered again (separately).
+
 With an overlay, the existing listeners can be suppressed and new ones can be set:
 
     charsAndChunks.overlay()
-    charsAndChunks.register (....
+    charsAndChunks.register (...)
 
 When the overlay is closed, the temporary situation is abandoned:
 
