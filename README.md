@@ -13,11 +13,6 @@ registered with the lengthiest pattern will be runned.
 Why? When you have seperate solutions for barcodes and for hotkeys,
 chances are big a barcodescan fires a hotkey.
 
-## Install
-
-Install the package as npm package. Chars and Chunks is available in
-umd-format and as an es-module.
-
 ## Features
 
 * There is one eventListener. It evaluates the key property of the keydown-event.
@@ -33,6 +28,17 @@ These sets may overlap.
 * A registration call returns a function cancelling the registration.
 * Chars and Chunks does not deal with entries made in input fields,
 textareas or selection lists.
+
+## Install
+
+Install the package as npm package. Provided are
+a umd-formatted file (dist folder) 
+and a es-module (module folder):
+
+    "dist/charsAndChunks.css",
+    "dist/charsAndChunks.js",
+    "module/charsAndChunks.css",
+    "module/charsAndChunks.js",
 
 ## Usage
 
@@ -103,7 +109,7 @@ when registering the match needs to executed to unregister:
 You will not find an unregister or toggle method in the API.
 When you need to remove or switch off a hotkey,
 you should register the hotkey separately in the beginning,
-and use the cleanup function to disable the hotkey. 
+and use the cleanup function to disable the hotkey.
 The hotkey may later be registered again (separately).
 
 With an overlay, the existing listeners can be suppressed and new ones can be set:
