@@ -292,6 +292,7 @@ describe('Good registration is handled well', function() {
 
     cleanup()
     const handle2 = collectionManagement.hotkeyHandler(entry)
+
     expect(registrations.OK.box).not.toBe(handle2)
   })
 

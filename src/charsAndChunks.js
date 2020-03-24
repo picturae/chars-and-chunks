@@ -9,6 +9,15 @@ const charsAndChunksModule = (function() {
   let streamTimeout = 0
   let stream = []
 
+  // we leave entry with on-the-fly editing to form controls
+  const fromFormControl = event => {
+    return (
+      event.target.tagName === 'INPUT' ||
+      event.target.tagName === 'TEXTAREA' ||
+      event.target.tagName === 'SELECT'
+    )
+  }
+
   const settleStream = function(event) {
     // We only deal with single characters or barcodes.
     let settle = stream.join('')
@@ -37,12 +46,8 @@ const charsAndChunksModule = (function() {
       clearTimeout(streamTimeout)
     }
 
-    // We expect our input can safely be processed; we leave entry with on-the-fly editing to form controls
-    const fromFormControl =
-      event.target.tagName === 'INPUT' ||
-      event.target.tagName === 'TEXTAREA' ||
-      event.target.tagName === 'SELECT'
-    if (fromFormControl) {
+    // We expect our input can safely be processed; we ignore typing in form controls
+    if (fromFormControl(event)) {
       stream = []
       return
     }

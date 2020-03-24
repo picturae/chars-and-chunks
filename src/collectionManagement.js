@@ -323,6 +323,7 @@ const collectionManagement = (function() {
    * Coerce a screen in the html - public toggle function
    */
   let toggleOverviewPanel = function() {
+    // initial direction; the other is removeOverviewHtml
     appendOverviewHtml()
   }
 
@@ -386,7 +387,7 @@ const collectionManagement = (function() {
    * Remove the open help-screen in the html
    * @private
    */
-  const removeOverviewHtml = function(event) {
+  const removeOverviewHtml = function() {
     const panel = document.querySelector('chars-and-chuncks-panel')
     panel
       .querySelector('table:first-of-type')
@@ -396,6 +397,8 @@ const collectionManagement = (function() {
       .removeEventListener('click', removeOverviewHtml)
     panel.remove()
     dataLockBox.revive()
+
+    // direct the toggle
     toggleOverviewPanel = function() {
       appendOverviewHtml()
     }

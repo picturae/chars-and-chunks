@@ -49,11 +49,13 @@
 
 
     let logM = () => {console.log('m pressed')}
-    var cleanMainHotkey = charsAndChunks.register ({ match: 'm', callback: logM, description: 'Prints "m pressed" in the console' })
     function logAltCtrlO () {console.log('ø pressed')}
-    var cleanMainHotkey = charsAndChunks.register ({ match: 'ø', callback: logAltCtrlO, description: 'same as accesskey "o" in chrome|ff/mac and ie|edge' })
     function logAltShiftO () {console.log('Ø pressed')}
-    var cleanMainHotkey = charsAndChunks.register ({ match: 'Ø', callback: logAltShiftO, description: 'same as accesskey "o" in chrome|ff/win' })
+    var cleanMainHotkey = charsAndChunks.register ([
+      { match: 'm', callback: logM, description: 'Prints "m pressed" in the console' },
+      { match: 'ø', callback: logAltCtrlO, description: 'same as accesskey "o" in chrome|ff/mac and ie|edge' },
+      { match: 'Ø', callback: logAltShiftO, description: 'same as accesskey "o" in chrome|ff/win' },
+    ])
     logAllDigitBarcode = () => {console.log('all-digit barcode scanned')}
     var cleanMainBarcode = charsAndChunks.register ({ match: /^\d+$/, callback: logAllDigitBarcode, description: 'Prints "all-digit barcode scanned" in the console' })
 
