@@ -1,5 +1,5 @@
 // rollup.config.js
-import commonjs from 'rollup-plugin-commonjs'
+import commonjs from '@rollup/plugin-commonjs'
 import { terser } from 'rollup-plugin-terser'
 import sass from 'rollup-plugin-sass'
 

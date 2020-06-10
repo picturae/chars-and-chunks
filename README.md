@@ -32,13 +32,8 @@ textareas or selection lists.
 ## Install
 
 Install the package as npm package. Provided are
-a umd-formatted file (dist folder) 
-and a es-module (module folder):
-
-    "dist/charsAndChunks.css",
-    "dist/charsAndChunks.js",
-    "module/charsAndChunks.css",
-    "module/charsAndChunks.js",
+a umd-formatted file in the dist folder to require or just read
+and an es-module in the module folder to import.
 
 ## Usage
 
@@ -55,7 +50,7 @@ The match property can serve two purposes.
 
 * As keystroke. The key may be modified (with Alt (or Option) and Shift).
     Since we use the key property of the keyboard event entries like
-    'Backspace' or 'ArrowUp' could used as match.
+    'Backspace' or 'ArrowUp' could be used as match.
     See
     https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values
 
