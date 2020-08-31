@@ -282,18 +282,47 @@ describe('Good registration is handled well', function() {
     expect(typeof cleanupOK === 'function').toBe(true)
   })
 
-  test(`A cleanup removes references to the context of a hotkey or barcode,
-      and therefore the hotkey or barcode can not be used anymore`, () => {
+  test(`A cleanup removes references to the context of a hotkey,
+      and therefore the hotkey can not be used anymore`, () => {
     const entry = registrations.OK.match
     const cleanup = collectionManagement.register(registrations.OK)
+
+    // { callback: {function}, description: {string} }
     const handle1 = collectionManagement.hotkeyHandler(entry)
 
     expect(registrations.OK.box).toBe(handle1)
 
     cleanup()
+
+    // undefined
     const handle2 = collectionManagement.hotkeyHandler(entry)
 
     expect(registrations.OK.box).not.toBe(handle2)
+  })
+
+  test(`A cleanup removes references to the context of a barcode,
+      and therefore the barcode can not be used anymore`, () => {
+    const entrySimple = 'simple'
+    const cleanupSimple = collectionManagement.register(
+      registrations.simpleRegex,
+    )
+    const handle1 = collectionManagement.barcodeHandler(entrySimple)
+
+    expect(handle1.description).toBe(registrations.simpleRegex.description)
+
+    cleanupSimple()
+
+    const handle2 = collectionManagement.barcodeHandler(entrySimple)
+
+    expect(handle2).toBeUndefined()
+
+    const entryAll = 'abc'
+    const cleanupAll = collectionManagement.register(
+      registrations.catchAllRegExp,
+    )
+    const handleAll = collectionManagement.barcodeHandler(entryAll)
+
+    expect(handleAll.description).toBe(registrations.catchAllRegExp.description)
   })
 
   test(`A array of hotkeys can be bulk-registered in one call,

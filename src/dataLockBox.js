@@ -125,8 +125,8 @@ const dataLockBox = (function() {
     data.lock.forEach((matchyVal, match) => {
       // console.log('cleanup locks', matchyVal, match)
       if (data.lock.get(match) === context) {
-        // console.log(`cleanup '${data.box.get(context)[match].description}'`)
-        data.lock.set(match, undefined)
+        // console.log('cleanup REMOVE', data.box.get(context)[match])
+        data.lock.delete(match)
       }
     })
     data.box.delete(context)
