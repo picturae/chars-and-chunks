@@ -62,11 +62,10 @@ const dataLockBox = (function() {
     if (data.lock.has(props.entry)) {
       // find context from lock,
       let context = data.lock.get(props.entry)
-      // console.log(`context to handle: ${context}`)
+      // console.log('context to handle:', context)
       if (context && data.box.has(context)) {
         const box = data.box.get(context)[props.entry]
-        // console.log(`box to handle:`)
-        // console.log(box)
+        // console.log('box to handle:', box)
         return box
       }
     }
@@ -122,8 +121,9 @@ const dataLockBox = (function() {
    * @param {object} context
    */
   const cleanup = function(context) {
-    // console.log(`cleanup context '${context.toString()}'`)
+    // console.log('cleanup context', context)
     data.lock.forEach((matchyVal, match) => {
+      // console.log('cleanup locks', matchyVal, match)
       if (data.lock.get(match) === context) {
         // console.log(`cleanup '${data.box.get(context)[match].description}'`)
         data.lock.set(match, undefined)

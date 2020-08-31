@@ -223,11 +223,13 @@ const collectionManagement = (function() {
     const keys = dataLockBox.keys()
 
     for (let key of keys) {
+      // console.log('examine regex:', key)
       if (key instanceof RegExp && key.test(barcode)) {
         // find the most complex RegExp
         if (key.toString().length > regex.toString().length) {
           regex = key
         }
+        // console.log('matched regex:', key, ', pick:', regex)
       }
     }
     // console.log(`barcodeMatch: ${regex}`)
@@ -240,12 +242,11 @@ const collectionManagement = (function() {
    * @returns {object} data object
    */
   const barcodeHandler = function(barcode) {
-    // console.log('barcodeHandler barcode ' + barcode)
+    // console.log('barcodeHandler barcode', barcode)
     const pattern = barcodeMatch(barcode)
-    // console.log('barcodeHandler pattern ' + pattern)
+    // console.log('barcodeHandler pattern', pattern)
     const retrieved = dataLockBox.retrieve({ entry: pattern })
-    // console.log('barcodeHandler retrieved ')
-    // console.log(retrieved)
+    // console.log('barcodeHandler retrieved ', retrieved)
     return retrieved
   }
 

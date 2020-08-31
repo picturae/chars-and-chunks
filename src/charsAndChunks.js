@@ -22,15 +22,15 @@ const charsAndChunksModule = (function() {
     // We only deal with single characters or barcodes.
     let settle = stream.join('')
     if (stream.length >= config.minimalBarcodeLength) {
-      //console.log(`handle as barcode: ${settle} (${stream.length})`)
       let handle = collectionManagement.barcodeHandler(settle)
+      // console.log('handle barcode', settle, handle)
       if (handle) {
         handle.callback(settle)
       }
     } else if (stream.length === 1) {
-      //console.log(`handle as character: ${settle} (${stream.length})`)
       if (event.ctrlKey) settle = `ctrl+${settle}`
       let handle = collectionManagement.hotkeyHandler(settle)
+      // console.log('handle hotkey', settle, handle)
       if (handle) {
         handle.callback(settle)
       }
