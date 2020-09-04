@@ -1,6 +1,6 @@
 {
   "name": "chars-and-chunks",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Detect, seperate and handle hotkeys and barcodes",
   "main": "dist/charsAndChunks.js",
   "module": "module/charsAndChunks.js",

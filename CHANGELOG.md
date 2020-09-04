@@ -20,3 +20,7 @@ new in 2.0.0
     * context can be omitted when registering.
 * no regex omission.
 * configuration of some settings for the event listener
+
+fixed in 2.0.1
+
+* the registry now removes keys and values, not only the values
