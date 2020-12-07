@@ -138,6 +138,7 @@ describe("It's all around a keyboard event", function() {
       this.value = event.key
     })
     input.dispatchEvent(keyStrokes.f)
+    jest.runAllTimers()
 
     expect(input.value).toBe('f')
     expect(spyHotkey).not.toHaveBeenCalled()
