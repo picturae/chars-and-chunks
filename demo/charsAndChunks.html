@@ -16,7 +16,7 @@
 
     <main>
       <button id="removeMain">remove main element</button>
-      <button accesskey="o"
+      <button accesskey="o" title="accesskey=&quot;o&quot;"
         onclick="charsAndChunks.help()"
       >show overview</button>
       <p>The main element is the scope of the 'm' hotkey and a all-digit barcode</p>
@@ -25,6 +25,7 @@
       <input placeholder="try the input" type="text "/>
       <p>Focus the input with Ctrl+i keycombination (Tab out of the input to continue using chars-and-chunks. Your form-entry should not have side-effects.)</p>
       <p>Blur any element with Backspace</p>
+      <p>Try the overlay mask with the 'ctrl+o'-hotkey</p>
 
     </main>
 
@@ -121,6 +122,35 @@
       { match: ['ArrowDown', 'ArrowRight'], callback: focusNextButton, description: 'Focus on next button'},
       { match: 'Backspace', callback: focusTheBody, description: 'Focus on the body'},
       { match: 'ctrl+i', callback: focusTheInput, description: 'Focus on the input'},
+    ])
+
+    function useOverlay () {
+      charsAndChunks.overlay()
+      const cleanupCloseOverlay = charsAndChunks.register ([
+        { match: 'ctrl+o', callback: closeOverlay, description: 'close the overlay and revive previous registrations'},
+        { match: 'a', callback: showAlert, description: 'show an alert'},
+      ])
+      function closeOverlay () {
+        window.alert(`
+          The charsAndChunks overlay will close.
+          The previous registrations will be revived.
+        `)
+        cleanupCloseOverlay()
+        charsAndChunks.revive()
+      }
+      function showAlert () {
+        window.alert(`Hi, this comes from a previously unregistered hotkey`)
+      }
+      window.alert(`
+        CharsAndChunks now overlayed all previous registrations
+        with new functionality for the 'ctrl+o'-hotkey,
+        and one new 'a'-hotkey.
+        Check the overview ('?'-hotkey).
+      `)
+    }
+
+    const cleanupOverlay = charsAndChunks.register ([
+      { match: 'ctrl+o', callback: useOverlay, description: 'overlay current registrations with a new set of registrations'},
     ])
 
     </script>
