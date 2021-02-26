@@ -108,6 +108,14 @@ describe('Good registration is handled well', function() {
     expect(spyConsoleError2).not.toHaveBeenCalled()
   })
 
+  test(`A registration lacking a match, will not be stored`, () => {
+    const spyConsoleStorage = jest.spyOn(dataLockBox, 'store')
+    registrations.OK2.match = undefined
+    collectionManagement.register(registrations.OK2)
+
+    expect(spyConsoleStorage).not.toHaveBeenCalled()
+  })
+
   test(`A registration lacking a description, will not be stored`, () => {
     const spyConsoleStorage = jest.spyOn(dataLockBox, 'store')
     registrations.OK2.description = ''
@@ -323,6 +331,12 @@ describe('Good registration is handled well', function() {
     const handleAll = collectionManagement.barcodeHandler(entryAll)
 
     expect(handleAll.description).toBe(registrations.catchAllRegExp.description)
+
+    cleanupAll()
+
+    const handleClean = collectionManagement.barcodeHandler(entryAll)
+
+    expect(handleClean).toBeFalsy()
   })
 
   test(`A array of hotkeys can be bulk-registered in one call,
