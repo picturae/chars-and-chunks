@@ -9,6 +9,16 @@ roadmap
     make a persistent table and merge it in any new layer.
 * automatic cleanup on html elements
 
+
+
+changed in 3.0.0
+
+* removed version 1 to version 2 deprications
+
+fixed in 2.0.1
+
+* the registry now removes keys and values, not only the values
+
 new in 2.0.0
 
 * functions with multiple hotkeys could have had multiple callbacks for one hotkey.
@@ -20,7 +30,3 @@ new in 2.0.0
     * context can be omitted when registering.
 * no regex omission.
 * configuration of some settings for the event listener
-
-fixed in 2.0.1
-
-* the registry now removes keys and values, not only the values

@@ -134,10 +134,10 @@ To change a setting in the eventListener:
 
 ## Notes
 
-### Version 1
+### Version 1 no longer supported
 
-The registration methods hotkey, hotkeys and barcode from version 1
-are now deprecated.
+The deprecated registration methods hotkey, hotkeys and barcode from version 1
+are now removed. Use the register method.
 
 ### Accesskeys
 

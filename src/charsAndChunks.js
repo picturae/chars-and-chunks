@@ -92,9 +92,6 @@ const charsAndChunksModule = (function() {
     publicAPI: {
       config: configure,
       register: collectionManagement.register,
-      hotkey: collectionManagement.registerHotkey,
-      hotkeys: collectionManagement.registerHotkeys,
-      barcode: collectionManagement.registerBarcode,
       overview: collectionManagement.overviewJson,
       help: collectionManagement.overviewPanel,
       reset: collectionManagement.reset,

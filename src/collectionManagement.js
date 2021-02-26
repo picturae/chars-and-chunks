@@ -2,36 +2,6 @@ import { dataLockBox } from './dataLockBox'
 
 const collectionManagement = (function() {
   /**
-   * Default regular expression.
-   */
-  const catchAllRegExp = /^/
-
-  /**
-   * Update deprecated v1 properties object
-   * @private
-   * @param {object} props - props according to version 1
-   * @returns {object}
-   */
-  const convertVersion1Props = function(props) {
-    if (!props.match && !props.regex && !props.char) {
-      props.match = catchAllRegExp
-    }
-    if (props.regex) {
-      props.match = props.regex
-      delete props.regex
-    }
-    if (props.char) {
-      props.match = props.char
-      delete props.char
-    }
-    if (props.comment) {
-      props.description = props.comment
-      delete props.comment
-    }
-    return props
-  }
-
-  /**
    * Check sanity of a registration object
    * @private
    * @param {object} props
@@ -68,15 +38,12 @@ const collectionManagement = (function() {
    * Register a context to trigger a function when any barcode is encountered
    * @private
    * @param {object} props
-   *    @member {string} char (v1, conditionally optional)
-   *    @member {RegExp} regex (v1, conditionally optional)
-   *    @member {string || RegExp} match (v2)
+   *    @member {string || RegExp} match
    *    @member {object} context - Node
    *    @member {function} callback
    *    @member {string} description
    */
   const registerMatch = function(props) {
-    props.match = props.match || props.char || props.regex
     props.box = {
       callback: props.callback,
       description: props.description,
@@ -130,48 +97,6 @@ const collectionManagement = (function() {
   }
 
   /**
-   * Register a context to trigger a function when the character is pressed
-   * @deprecated since version 2.0
-   * @param {object} props
-   * @returns {object}
-   */
-  const registerHotkey = function(props) {
-    convertVersion1Props(props)
-    if (props.match instanceof Array) {
-      // route items in mulltiple match registrations
-      let lastSanePropIfAny, lastProp
-      props.match.forEach(char => {
-        const singleCharProps = Object.assign({}, props, { match: char })
-        lastProp = registerHotkey(singleCharProps)
-        if (lastProp) lastSanePropIfAny = lastProp
-      })
-      return lastSanePropIfAny
-    } else {
-      // simple flow
-      if (registrationSanity(props)) {
-        registerMatch(props)
-        // console.log(`hotkey registered: ${props.match}`)
-        return props
-      }
-    }
-  }
-
-  /**
-   * Register an array of contexts to trigger a function when the character is pressed
-   * @deprecated since version 2.0
-   * @param {array} propsList
-   * @returns {array}
-   */
-  const registerHotkeys = function(propsList) {
-    let refsList = []
-    propsList.forEach(props => {
-      let refs = registerHotkey(props)
-      if (refs) refsList.push(refs)
-    })
-    return refsList
-  }
-
-  /**
    * Find the right data for hotkey
    * @param {string} match
    * @returns {object} data object
@@ -193,22 +118,6 @@ const collectionManagement = (function() {
         })
       }
       return handle
-    }
-  }
-
-  /**
-   * Register a context to trigger a function when any barcode is encountered
-   * @deprecated since version 2.0
-   * @param {object} props
-   * @returns {object || undefined}
-   */
-  const registerBarcode = function(props) {
-    // console.log(' registerBarcode registerBarcode ')
-    convertVersion1Props(props)
-    if (registrationSanity(props)) {
-      registerMatch(props)
-      // console.log(`barcode registered: ${props.match}`)
-      return props
     }
   }
 
@@ -405,37 +314,9 @@ const collectionManagement = (function() {
     }
   }
 
-  /*
-   * Make object in context eligible for garbage collection
-   * @param {object} context
-   */
-  const cleanup = function(sanitisedProps) {
-    dataLockBox.cleanup(sanitisedProps.context)
-  }
-
   return {
     register: register,
-    registerHotkey: function(props) {
-      const saneProps = registerHotkey(props)
-      return function() {
-        if (saneProps && saneProps.context) cleanup(saneProps)
-      }
-    },
-    registerHotkeys: function(propsList) {
-      const sanePropsList = registerHotkeys(propsList)
-      return function() {
-        sanePropsList.forEach(saneProps => {
-          if (saneProps && saneProps.context) cleanup(saneProps)
-        })
-      }
-    },
     hotkeyHandler: hotkeyHandler,
-    registerBarcode: function(props) {
-      const saneProps = registerBarcode(props)
-      return function() {
-        if (saneProps && saneProps.context) cleanup(saneProps)
-      }
-    },
     barcodeHandler: barcodeHandler,
     overviewJson: overviewJson,
     overviewPanel: toggleOverviewPanel,
