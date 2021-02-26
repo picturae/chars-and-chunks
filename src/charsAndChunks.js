@@ -95,6 +95,8 @@ const charsAndChunksModule = (function() {
       overview: collectionManagement.overviewJson,
       help: collectionManagement.overviewPanel,
       reset: collectionManagement.reset,
+      mute: collectionManagement.mute,
+      free: collectionManagement.free,
       overlay: collectionManagement.overlay,
       revive: collectionManagement.revive,
     },

@@ -2,14 +2,16 @@
 
 roadmap
 
-* replace revive api-function by a returned function (like for registration),
+* double revive api-function by a returned function (like for registration),
     so we can pass it outside a
     controller and be sure the right overlay is removed.
-* always active hotkeys, like ? for help en Escape for closing modals.
-    make a persistent table and merge it in any new layer.
+* configurable hotkey '?' for help.
 * automatic cleanup on html elements
 
 
+new in 3.0.0
+
+* mute and free: temporarily suppress one or more hotkeys or barcodes
 
 changed in 3.0.0
 

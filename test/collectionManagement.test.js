@@ -290,14 +290,14 @@ describe('Good registration is handled well', function() {
     // { callback: {function}, description: {string} }
     const handle1 = collectionManagement.hotkeyHandler(entry)
 
-    expect(registrations.OK.box).toBe(handle1)
+    expect(handle1.callback).toBe(registrations.OK.callback)
+    expect(handle1.description).toBe(registrations.OK.description)
 
     cleanup()
 
-    // undefined
     const handle2 = collectionManagement.hotkeyHandler(entry)
 
-    expect(registrations.OK.box).not.toBe(handle2)
+    expect(handle2).toBeFalsy()
   })
 
   test(`A cleanup removes references to the context of a barcode,
@@ -314,7 +314,7 @@ describe('Good registration is handled well', function() {
 
     const handle2 = collectionManagement.barcodeHandler(entrySimple)
 
-    expect(handle2).toBeUndefined()
+    expect(handle2).toBeFalsy()
 
     const entryAll = 'abc'
     const cleanupAll = collectionManagement.register(
@@ -337,8 +337,8 @@ describe('Good registration is handled well', function() {
     const entryArray = registrations.array.match[0]
     const handleArray = collectionManagement.hotkeyHandler(entryArray)
 
-    expect(registrations.specialKey.box).toBe(handleSpecial)
-    expect(registrations.array.description).toBe(handleArray.description)
+    expect(handleSpecial.callback).toBe(registrations.specialKey.callback)
+    expect(handleArray.description).toBe(registrations.array.description)
 
     cleanupRefs()
 
@@ -347,5 +347,30 @@ describe('Good registration is handled well', function() {
 
     expect(handleSpecial2).toBeFalsy()
     expect(handleArray2).toBeFalsy()
+  })
+
+  /* Mute / Free */
+
+  test('A hotkey or barcode can temporarily suppressed and released again', () => {
+    const entry = '.'
+    const spyCallback = jest.spyOn(registrations.OK, 'callback')
+    collectionManagement.register(registrations.OK)
+    const handle = collectionManagement.hotkeyHandler(entry)
+    handle.callback(entry)
+
+    expect(spyCallback).toHaveBeenCalledTimes(1)
+
+    collectionManagement.mute(entry)
+    const handleMute = collectionManagement.hotkeyHandler(entry)
+
+    expect(handleMute).toBeFalsy()
+    // no new call, counter stays the same
+    expect(spyCallback).toHaveBeenCalledTimes(1)
+
+    collectionManagement.free(entry)
+    const handleFree = collectionManagement.hotkeyHandler(entry)
+    handleFree.callback(entry)
+
+    expect(spyCallback).toHaveBeenCalledTimes(2)
   })
 })

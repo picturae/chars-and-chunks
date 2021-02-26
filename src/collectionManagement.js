@@ -38,17 +38,17 @@ const collectionManagement = (function() {
    * Register a context to trigger a function when any barcode is encountered
    * @private
    * @param {object} props
-   *    @member {string || RegExp} match
-   *    @member {object} context - Node
-   *    @member {function} callback
-   *    @member {string} description
+   *    @member {String | RegExp} match
+   *    @member {Object} context - Node
+   *    @member {Function} callback
+   *    @member {String} description
    */
   const registerMatch = function(props) {
-    props.box = {
+    const internals = {
       callback: props.callback,
       description: props.description,
     }
-    dataLockBox.store(props)
+    dataLockBox.store(props, internals)
   }
 
   /**
@@ -321,6 +321,8 @@ const collectionManagement = (function() {
     overviewJson: overviewJson,
     overviewPanel: toggleOverviewPanel,
     reset: dataLockBox.reset,
+    mute: dataLockBox.mute,
+    free: dataLockBox.free,
     overlay: dataLockBox.overlay,
     revive: dataLockBox.revive,
   }

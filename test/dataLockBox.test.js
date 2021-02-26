@@ -1,7 +1,14 @@
 import { dataLockBox } from '../src/dataLockBox'
 
 describe('Context dependemt storage is volatile by design', function() {
-  let dataItems = {}
+  const dataItems = {}
+
+  const itemBox = function(dataItem) {
+    return {
+      callback: dataItem.callback,
+      description: dataItem.description,
+    }
+  }
 
   beforeEach(() => {
     document.body.innerHTML = '<header></header><main></main><footer></footer>'
@@ -9,34 +16,28 @@ describe('Context dependemt storage is volatile by design', function() {
     dataItems.Home = {
       match: 'Home',
       context: document.querySelector('header'),
-      box: {
-        callback: function() {
-          console.log("'Home' happend!")
-        },
-        description: "Logs the 'Home' event",
+      callback: function() {
+        console.log("'Home' happend!")
       },
+      description: "Logs the 'Home' event",
     }
 
     dataItems.Regex = {
       match: /\w{2,7}/,
       context: document.querySelector('main'),
-      box: {
-        callback: function() {
-          console.log("'Regex' happend!")
-        },
-        description: "Logs the 'Regex' event",
+      callback: function() {
+        console.log("'Regex' happend!")
       },
+      description: "Logs the 'Regex' event",
     }
 
     dataItems.F = {
       match: 'F',
       context: document.querySelector('footer'),
-      box: {
-        callback: function() {
-          console.log("'F' happend!")
-        },
-        description: "Logs the 'F' event",
+      callback: function() {
+        console.log("'F' happend!")
       },
+      description: "Logs the 'F' event",
     }
   })
 
@@ -49,43 +50,37 @@ describe('Context dependemt storage is volatile by design', function() {
   /* Test storage integrity */
 
   test('Stored data can be retrieved', () => {
-    dataLockBox.store(dataItems.Home)
-    const HomeItemHandle = dataLockBox.retrieve({ entry: dataItems.Home.match })
+    dataLockBox.store(dataItems.Home, itemBox(dataItems.Home))
+    const handle = dataLockBox.retrieve({ entry: 'Home' })
+    console.log('handle', handle)
 
-    expect(HomeItemHandle).toBe(dataItems.Home.box)
+    expect(handle.callback).toBe(dataItems.Home.callback)
+    expect(handle.description).toBe(dataItems.Home.description)
   })
 
   test("Storing without 'match' property creates a key with value undefined", () => {
     let noMatchData = dataItems.Home
     delete noMatchData.match
-    dataLockBox.store(noMatchData)
+    dataLockBox.store(noMatchData, itemBox(noMatchData))
     const noMatchHandle = dataLockBox.retrieve({ entry: noMatchData.match })
 
-    expect(noMatchHandle).toBe(noMatchData.box)
+    expect(noMatchHandle.callback).toBe(dataItems.Home.callback)
+    expect(noMatchHandle.description).toBe(dataItems.Home.description)
   })
 
   test("Storing without 'context' property is not allowed", () => {
     const spyConsoleError = jest.spyOn(console, 'error')
     let noContextData = dataItems.Home
     delete noContextData.context
-    dataLockBox.store(noContextData)
+    dataLockBox.store(noContextData, itemBox(noContextData))
 
     expect(spyConsoleError).toHaveBeenCalled()
   })
 
-  test("Storing without 'box' property stores a record with value undefined", () => {
-    let noBoxData = dataItems.Home
-    delete noBoxData.box
-    dataLockBox.store(noBoxData)
-    const noBoxHandle = dataLockBox.retrieve({ entry: noBoxData.match })
-
-    expect(noBoxHandle).toBe(undefined)
-  })
-
   test('Overview creates an array of objects with a valid context', () => {
-    dataLockBox.store(dataItems.Home)
-    dataLockBox.store(dataItems.Regex)
-    dataLockBox.store(dataItems.F)
+    dataLockBox.store(dataItems.Home, itemBox(dataItems.Home))
+    dataLockBox.store(dataItems.Regex, itemBox(dataItems.Regex))
+    dataLockBox.store(dataItems.F, itemBox(dataItems.F))
 
     dataLockBox.cleanup(dataItems.F.context)
     const records = dataLockBox.overview()
@@ -94,11 +89,11 @@ describe('Context dependemt storage is volatile by design', function() {
   })
 
   test('A new page of interaction can be created and discarded', () => {
-    dataLockBox.store(dataItems.Home)
-    dataLockBox.store(dataItems.Regex)
+    dataLockBox.store(dataItems.Home, itemBox(dataItems.Home))
+    dataLockBox.store(dataItems.Regex, itemBox(dataItems.Regex))
     const overview0 = dataLockBox.overview()
     dataLockBox.overlay()
-    dataLockBox.store(dataItems.F)
+    dataLockBox.store(dataItems.F, itemBox(dataItems.F))
     const overviewOverlay = dataLockBox.overview()
     dataLockBox.revive()
     const overviewWithdraw = dataLockBox.overview()
@@ -109,17 +104,52 @@ describe('Context dependemt storage is volatile by design', function() {
   })
 
   test('Retrieve returns the box value of the entry', () => {
-    dataLockBox.store(dataItems.Home)
+    dataLockBox.store(dataItems.Home, itemBox(dataItems.Home))
     const retrievedItem = dataLockBox.retrieve({ entry: 'Home' })
 
-    expect(dataItems.Home.box).toEqual(retrievedItem)
+    expect(retrievedItem.callback).toEqual(dataItems.Home.callback)
+    expect(retrievedItem.description).toEqual(dataItems.Home.description)
   })
 
   test('Cleanup invalidates any lock with that context as value', () => {
-    dataLockBox.store(dataItems.Regex)
+    dataLockBox.store(dataItems.Regex, itemBox(dataItems.Regex))
     dataLockBox.cleanup(dataItems.Regex.context)
     const retrievedItem = dataLockBox.retrieve({ entry: 'Regex' })
 
-    expect(retrievedItem).toEqual(undefined)
+    expect(retrievedItem).toBeFalsy()
+  })
+
+  /* Mute / Free */
+
+  test('A hotkey or barcode can temporarily be suppressed and then released again', () => {
+    dataLockBox.store(dataItems.Home, itemBox(dataItems.Home))
+    dataLockBox.mute('Home')
+    const retrieveMute = dataLockBox.retrieve({ entry: 'Home' })
+
+    expect(retrieveMute).toBeFalsy()
+
+    dataLockBox.free('Home')
+    const retrieveFree = dataLockBox.retrieve({ entry: 'Home' })
+
+    expect(retrieveFree.callback).toEqual(dataItems.Home.callback)
+  })
+
+  test('A hotkey or barcode suppressed is tied to the data set (layer)', () => {
+    dataLockBox.store(dataItems.Home, itemBox(dataItems.Home))
+    dataLockBox.mute('Home')
+    const retrieveMute = dataLockBox.retrieve({ entry: 'Home' })
+
+    expect(retrieveMute).toBeFalsy()
+
+    dataLockBox.overlay()
+    dataLockBox.store(dataItems.Home, itemBox(dataItems.Home))
+    const retrieveOverlay = dataLockBox.retrieve({ entry: 'Home' })
+
+    expect(retrieveOverlay).toEqual(itemBox(dataItems.Home))
+
+    dataLockBox.revive()
+    const retrieveLater = dataLockBox.retrieve({ entry: 'Home' })
+
+    expect(retrieveLater).toBeFalsy()
   })
 })

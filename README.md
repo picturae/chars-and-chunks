@@ -116,6 +116,14 @@ When the overlay is closed, the temporary situation is abandoned:
 
     charsAndChunks.revive()
 
+Listeners can be suppressed separately:
+
+    charsAndChunks.mute('h', 'm')
+
+Suppressed listeners can later be released:
+
+    charsAndChunks.free('h', 'm')
+
 To get an onscreen overview of effective keys and barcodes press "?" key or:
 
     charsAndChunks.help()

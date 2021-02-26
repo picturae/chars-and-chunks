@@ -31,11 +31,15 @@ const dataLockBox = (function() {
    * and a context as a box with matches holding data
    * @private
    * @param {object} props
-   *    @member {primitive | object} match
-   *    @member {object} context
-   *    @member {primitive | object} box - the data itself
+   *    @member {String | RegExp} match
+   *    @member {Object} context
+   *    @member {Function} callback
+   *    @member {String} description
+   * @param {Object} box - the data itself
+   *    @member {Function} callback
+   *    @member {String} description
    */
-  const store = function(props) {
+  const store = function(props, box) {
     // console.log(`match to write: ${props.match}`)
     if (!storageSanity(props)) return
     // Register context with string or regular expression in a Map
@@ -46,7 +50,7 @@ const dataLockBox = (function() {
     }
     // console.log(`box to write: ${data.box.get(props.context)}`)
     // Register data with context in a WeakMap
-    data.box.get(props.context)[props.match] = props.box
+    data.box.get(props.context)[props.match] = box
     // console.log(`box written: ${data.box.get(props.context)}`)
   }
 
@@ -66,7 +70,7 @@ const dataLockBox = (function() {
       if (context && data.box.has(context)) {
         const box = data.box.get(context)[props.entry]
         // console.log('box to handle:', box)
-        return box
+        return box && !box.mute ? box : undefined
       }
     }
   }
@@ -95,6 +99,24 @@ const dataLockBox = (function() {
    */
   const reset = function() {
     data = new LockBoxModel()
+  }
+
+  /**
+   * Temporary suppress or release a match
+   * @this {...(String | RegExp)} entries
+   * @param {Boolean} toggle - mute or free
+   */
+  const mute = function(toggle) {
+    const entries = Array.from(this).flat()
+    entries.forEach(entry => {
+      if (data.lock.has(entry)) {
+        const context = data.lock.get(entry)
+        if (context && data.box.has(context)) {
+          const box = data.box.get(context)[entry]
+          box.mute = toggle
+        }
+      }
+    })
   }
 
   /*
@@ -140,6 +162,12 @@ const dataLockBox = (function() {
     },
     overview: overview,
     reset: reset,
+    mute: function() {
+      mute.call(arguments, true)
+    },
+    free: function() {
+      mute.call(arguments, false)
+    },
     overlay: overlay,
     revive: revive,
     cleanup: cleanup,
