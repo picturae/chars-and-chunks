@@ -2,7 +2,7 @@
 
 roadmap
 
-* replace revive api-function by a retuned function (like for registration),
+* replace revive api-function by a returned function (like for registration),
     so we can pass it outside a
     controller and be sure the right overlay is removed.
 * always active hotkeys, like ? for help en Escape for closing modals.

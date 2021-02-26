@@ -1,8 +1,8 @@
 const dataLockBox = (function() {
   /**
    * Definition of storage structure
-   * @member {Map} lock - Map of characters and regular expressions holding a context.
-   * @member {WeakMap} box - WeakMap of contexts holding an object with a single charcter, a callback and a description
+   * @member {Map} lock - Characters or RegExp's holding one context.
+   * @member {WeakMap} box - Contexts holding a object with details by character.
    */
   const LockBoxModel = function() {
     this.lock = new Map()
@@ -14,7 +14,7 @@ const dataLockBox = (function() {
   let stash = []
 
   /**
-   * Snaity check for storage
+   * Sanity check for storage
    * @private
    * @returns {boolean} is sane
    */

@@ -73,7 +73,7 @@ const collectionManagement = (function() {
 
       // object registration
       if (props.match instanceof Array) {
-        // mulltiple match registration
+        // multiple match registration
         props.match.forEach(matchItem => {
           const matchProps = {
             ...props,

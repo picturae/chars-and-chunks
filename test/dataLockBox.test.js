@@ -46,7 +46,7 @@ describe('Context dependemt storage is volatile by design', function() {
     jest.restoreAllMocks()
   })
 
-  /* Test storoga integrity */
+  /* Test storage integrity */
 
   test('Stored data can be retrieved', () => {
     dataLockBox.store(dataItems.Home)
