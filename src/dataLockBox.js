@@ -107,8 +107,8 @@ const dataLockBox = (function() {
    * @param {Boolean} toggle - mute or free
    */
   const mute = function(toggle) {
-    const entries = Array.from(this).flat()
-    entries.forEach(entry => {
+    const entries = this.length ? Array.from(this).flat() : data.lock.keys()
+    for (const entry of entries) {
       if (data.lock.has(entry)) {
         const context = data.lock.get(entry)
         if (context && data.box.has(context)) {
@@ -116,7 +116,7 @@ const dataLockBox = (function() {
           box.mute = toggle
         }
       }
-    })
+    }
   }
 
   /*

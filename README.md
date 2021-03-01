@@ -107,7 +107,7 @@ you should register the hotkey separately in the beginning,
 and use the cleanup function to disable the hotkey.
 The hotkey may later be registered again (separately).
 
-With an overlay, the existing listeners can be suppressed and new ones can be set:
+With an overlay, the existing listeners can be set aside and a new set can be made:
 
     charsAndChunks.overlay()
     charsAndChunks.register (...)
@@ -116,13 +116,15 @@ When the overlay is closed, the temporary situation is abandoned:
 
     charsAndChunks.revive()
 
-Listeners can be suppressed separately:
+Listeners can be suppressed as a whole or separately:
 
-    charsAndChunks.mute('h', 'm')
+    charsAndChunks.mute() // mute all current listeners
+    charsAndChunks.mute('h', 'm') // mute specified listeners
 
 Suppressed listeners can later be released:
 
-    charsAndChunks.free('h', 'm')
+    charsAndChunks.free() // free all current listeners
+    charsAndChunks.free('h', 'm') // free specified listeners
 
 To get an onscreen overview of effective keys and barcodes press "?" key or:
 
