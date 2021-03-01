@@ -171,6 +171,8 @@ const collectionManagement = (function() {
     records.forEach(record => {
       var peers = records.filter(
         other =>
+          other.box &&
+          record.box &&
           other.box.callback === record.box.callback &&
           other.box.description === record.box.description,
       )

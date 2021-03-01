@@ -260,17 +260,18 @@ describe('Good registration is handled well', function() {
   })
 
   test("An overview object with an array 'hotkey' and an array 'barcode' is returned when some hotkeys and barcodes were configured", () => {
-    collectionManagement.register(registrations.OK)
-    collectionManagement.register(registrations.OK2)
+    collectionManagement.register([registrations.OK, registrations.OK2])
     const ovvObj = collectionManagement.overviewJson()
 
     expect(ovvObj.barcodes instanceof Array).toBe(true)
   })
 
   test('An help-screen with all active matches is coerced to the hosting application', () => {
-    collectionManagement.register(registrations.OK)
-    collectionManagement.register(registrations.OK2)
-    collectionManagement.register(registrations.catchAllRegExp)
+    collectionManagement.register([
+      registrations.OK,
+      registrations.OK2,
+      registrations.catchAllRegExp,
+    ])
     collectionManagement.overviewPanel()
 
     const totalSelector = 'chars-and-chuncks-panel tbody tr'
@@ -280,6 +281,19 @@ describe('Good registration is handled well', function() {
 
     expect(total.length).toBe(3)
     expect(barcodes.length).toBe(2)
+  })
+
+  test('An overview should not show muted keys', () => {
+    collectionManagement.register([registrations.OK, registrations.specialKey])
+    const ovvObj = collectionManagement.overviewJson()
+    const hotkeyCount = ovvObj.hotkeys.length
+
+    expect(ovvObj.hotkeys.length).toBe(hotkeyCount)
+
+    collectionManagement.mute('Backspace')
+    const ovvObjMute = collectionManagement.overviewJson()
+
+    expect(ovvObjMute.hotkeys.length).toBe(hotkeyCount - 1)
   })
 
   /* Cleanup */
