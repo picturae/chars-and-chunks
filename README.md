@@ -126,6 +126,9 @@ Suppressed listeners can later be released:
     charsAndChunks.free() // free all current listeners
     charsAndChunks.free('h', 'm') // free specified listeners
 
+When muting or freeing barcodes,
+the RegExp specified must be identical to the one registered.
+
 To get an onscreen overview of effective keys and barcodes press "?" key or:
 
     charsAndChunks.help()

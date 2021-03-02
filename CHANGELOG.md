@@ -17,6 +17,10 @@ changed in 3.0.0
 
 * removed version 1 to version 2 deprications
 
+fixed in 3.0.1
+
+* fixed opening the overview with muted items
+
 fixed in 2.0.1
 
 * the registry now removes keys and values, not only the values

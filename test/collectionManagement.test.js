@@ -401,4 +401,39 @@ describe('Good registration is handled well', function() {
 
     expect(spyCallback).toHaveBeenCalledTimes(2)
   })
+
+  test('Multiple hotkey or barcode can temporarily suppressed and released again', () => {
+    const entryOK2 = 'HEMIPTERAN'
+    const entryArray = '+'
+    const spyCallbackOK2 = jest.spyOn(registrations.OK2, 'callback')
+    const spyCallbackArray = jest.spyOn(registrations.array, 'callback')
+    collectionManagement.register([registrations.OK2, registrations.array])
+
+    const handleOK2 = collectionManagement.barcodeHandler(entryOK2)
+    const handleArray = collectionManagement.hotkeyHandler(entryArray)
+    handleOK2.callback(entryOK2)
+    handleArray.callback(entryArray)
+
+    expect(spyCallbackOK2).toHaveBeenCalledTimes(1)
+    expect(spyCallbackArray).toHaveBeenCalledTimes(1)
+
+    collectionManagement.mute(registrations.OK2.match, entryArray)
+    const handleOK2Mute = collectionManagement.barcodeHandler(entryOK2)
+    const handleArrayMute = collectionManagement.hotkeyHandler(entryArray)
+
+    expect(handleOK2Mute).toBeFalsy()
+    expect(handleArrayMute).toBeFalsy()
+    // no new call, counter stays the same
+    expect(spyCallbackOK2).toHaveBeenCalledTimes(1)
+    expect(spyCallbackArray).toHaveBeenCalledTimes(1)
+
+    collectionManagement.free(registrations.OK2.match, entryArray)
+    const handleOK2Free = collectionManagement.barcodeHandler(entryOK2)
+    const handleArrayFree = collectionManagement.hotkeyHandler(entryArray[0])
+    handleOK2Free.callback()
+    handleArrayFree.callback()
+
+    expect(spyCallbackOK2).toHaveBeenCalledTimes(2)
+    expect(spyCallbackArray).toHaveBeenCalledTimes(2)
+  })
 })
